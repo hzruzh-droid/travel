@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>山西 6 天 5 晚 · 寺庙人文巡礼（惠州出发）</title>
+<meta name="description" content="惠州出发 9/4-9/10，大同、五台山、太原，灵验寺庙+人文自然，亚朵住宿，性价比攻略与交互地图。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   Design System — edit :root to change theme
+   ═══════════════════════════════════════════ */
+:root {
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f5f5f7;
+  --bg-tertiary:   #fbfbfd;
+  --bg-grouped:    #f2f2f7;
+  --bg-elevated:   #ffffff;
+  --text-primary:   #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary:  #aeaeb2;
+  --accent:        #0071e3;
+  --accent-hover:  #0077ed;
+  --tint-red:    #ff3b30;
+  --tint-orange: #ff9500;
+  --tint-green:  #34c759;
+  --tint-blue:   #007aff;
+  --tint-purple: #af52de;
+  --tint-pink:   #ff2d55;
+  --separator:  rgba(60, 60, 67, .12);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 14px rgba(0,0,0,.08);
+  --shadow-lg:  0 8px 30px rgba(0,0,0,.12);
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+               "Helvetica Neue", "Arial", sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.47059;
+  letter-spacing: -0.022em;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Map ── */
+#map { width: 100%; height: 40vh; min-height: 280px; position: sticky; top: 0; z-index: 100; }
+.locate-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border: none; box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.locate-btn.active { color: #007aff; }
+@keyframes loc-pulse {
+  0%   { transform: scale(1); opacity: .55; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.loc-pulse {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(0,122,255,.25);
+  animation: loc-pulse 1.6s ease-out infinite;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex; gap: 6px; padding: 12px 16px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  background: rgba(255,255,255,.85); -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px); position: sticky; top: 40vh; z-index: 99;
+  border-bottom: .5px solid var(--separator); scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0; padding: 7px 16px; border-radius: 980px; border: none;
+  background: var(--bg-grouped); color: var(--text-secondary);
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: all .25s ease;
+  white-space: nowrap; letter-spacing: -0.01em;
+}
+.tab:active { transform: scale(.96); }
+.tab.active { background: var(--accent); color: #fff; }
+
+/* ── Main content ── */
+.content { max-width: 680px; margin: 0 auto; padding: 16px 16px calc(24px + var(--safe-bottom)); }
+
+/* ── Overview ── */
+.hero { text-align: center; padding: 28px 20px 20px; }
+.hero h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+.hero .subtitle { font-size: 17px; color: var(--text-secondary); margin-top: 6px; font-weight: 400; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.info-card { background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm); }
+.info-card .label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .02em; margin-bottom: 6px; }
+.info-card .value { font-size: 15px; font-weight: 600; line-height: 1.4; }
+
+/* ── Section headers ── */
+.section-head { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .03em; padding: 20px 0 8px; }
+
+/* ── Day header ── */
+.day-head { padding: 20px 0 12px; }
+.day-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.day-head p { font-size: 15px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ── Route bar ── */
+.route-bar { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 14px; box-shadow: var(--shadow-sm); font-size: 13px; color: var(--text-secondary); line-height: 1.7; white-space: pre-line; }
+.route-bar strong { color: var(--text-primary); }
+
+/* ── Timeline ── */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 20px; bottom: 20px; width: 1.5px; background: var(--separator); }
+.tl-item { position: relative; margin-bottom: 10px; }
+.tl-dot { position: absolute; left: -20px; top: 18px; width: 10px; height: 10px; border-radius: 50%; z-index: 1; box-shadow: 0 0 0 3px var(--bg-secondary); }
+.tl-dot.food    { background: var(--tint-red); }
+.tl-dot.spot    { background: var(--tint-blue); }
+.tl-dot.hotel   { background: var(--tint-orange); }
+.tl-dot.drink   { background: var(--tint-purple); }
+.tl-dot.transport { background: var(--text-tertiary); }
+
+/* ── Card ── */
+.card { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-sm); transition: box-shadow .25s ease; cursor: pointer; }
+.card:active { box-shadow: var(--shadow-md); }
+.card .time { font-size: 12px; font-weight: 600; color: var(--text-tertiary); letter-spacing: .01em; }
+.card .name { font-size: 17px; font-weight: 600; margin: 2px 0 4px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 6px; }
+.card .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.45; }
+.card { overflow: hidden; }
+.card-photo { width: calc(100% + 32px); height: 170px; object-fit: cover; display: block; margin: -14px -16px 10px; }
+
+/* ── Day cover ── */
+.day-cover { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 14px; display: block; }
+
+/* ── Photo gallery (overview) ── */
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.photo-card { background: var(--bg-elevated); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.photo-card img { width: 100%; height: 118px; object-fit: cover; display: block; }
+.photo-card div { padding: 8px 10px; font-size: 12px; font-weight: 600; line-height: 1.35; }
+
+/* Badge */
+.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 4px; }
+.badge.food   { background: rgba(255,59,48,.1);  color: var(--tint-red); }
+.badge.spot   { background: rgba(0,122,255,.1);  color: var(--tint-blue); }
+.badge.drink  { background: rgba(175,82,222,.1); color: var(--tint-purple); }
+
+/* Budget */
+.budget { display: inline-block; margin-top: 6px; padding: 3px 10px; background: var(--bg-grouped); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+/* Payment */
+.pays { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.pay { font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 600; }
+.pay.ok  { background: rgba(52,199,89,.1);  color: var(--tint-green); }
+.pay.no  { background: rgba(255,59,48,.08); color: var(--tint-red); }
+.pay.idk { background: rgba(255,149,0,.1);  color: var(--tint-orange); }
+
+/* Links row */
+.links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 14px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+  text-decoration: none !important; transition: filter .2s;
+}
+.btn:active { filter: brightness(.9); }
+.btn.nav    { background: var(--accent); color: #fff; }
+.btn.xhs    { background: #ff2442; color: #fff; }
+.btn.dp     { background: #ffa700; color: #fff; }
+.btn.rsv    { background: var(--tint-green); color: #fff; }
+
+/* Action Sheet */
+.as-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.35); backdrop-filter: blur(2px);
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.as-overlay.show { opacity: 1; pointer-events: auto; }
+.as-sheet {
+  width: 100%; max-width: 420px;
+  padding: 0 8px 34px;
+  transform: translateY(100%); transition: transform .3s cubic-bezier(.22,1,.36,1);
+}
+.as-overlay.show .as-sheet { transform: translateY(0); }
+.as-group {
+  background: rgba(255,255,255,.88); backdrop-filter: blur(20px);
+  border-radius: 14px; overflow: hidden; margin-bottom: 8px;
+}
+.as-group .as-item {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px; font-size: 18px; color: #007aff; font-weight: 500;
+  border: none; background: none; width: 100%; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.as-group .as-item + .as-item { border-top: .5px solid rgba(0,0,0,.12); }
+.as-group .as-item:active { background: rgba(0,0,0,.06); }
+.as-cancel { font-weight: 600; }
+
+/* Details — default open */
+.details {
+  margin-top: 10px; padding-top: 10px;
+  border-top: .5px solid var(--separator);
+  font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+}
+.details.closed { display: none; }
+
+/* ── Overview day list ── */
+.day-list .card { margin-bottom: 8px; }
+.day-list .card .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+/* ── Payment summary ── */
+.pay-summary { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-sm); font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+.pay-summary h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.pay-summary .warn { color: var(--tint-red); }
+.pay-summary .ok-text { color: var(--tint-green); }
+
+/* ── Legend ── */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 8px 0; font-size: 12px; color: var(--text-secondary); }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── Leaflet overrides ── */
+.leaflet-popup-content-wrapper { border-radius: var(--radius-md) !important; box-shadow: var(--shadow-lg) !important; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important; }
+.leaflet-popup-content { font-size: 14px !important; line-height: 1.5 !important; margin: 12px 14px !important; }
+.leaflet-popup-content a { color: var(--accent) !important; }
+.leaflet-popup-tip { background: #fff !important; }
+.leaflet-control-zoom a { width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 16px !important; border-radius: 10px !important; background: rgba(255,255,255,.85) !important; -webkit-backdrop-filter: blur(10px) !important; backdrop-filter: blur(10px) !important; border: .5px solid var(--separator) !important; color: var(--text-primary) !important; }
+.leaflet-control-zoom { border-radius: 12px !important; overflow: hidden; box-shadow: var(--shadow-md) !important; border: none !important; }
+.leaflet-control-attribution { font-size: 9px !important; opacity: .5; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  REPLACE THIS SECTION — Hotel and Days data                 ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+const HOTEL = { name: '大同平城西环路亚朵酒店', lat: 40.0845, lng: 113.2780 };
+
+const DAYS = [
+  { id: 0, label: '总览', color: '#0071e3', locations: [] },
+  {
+    id: 1, label: 'D1', date: '9/5 周六', title: '落地大同 · 云冈石窟 + 古城夜景',
+    color: '#e76f51', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Yungang_Grottoes_03.jpg?width=900',
+    locations: [
+      {
+        name: '✈ 落地云冈机场（大同）', lat: 40.0603, lng: 113.4822,
+        type: 'transport', time: '11:55',
+        desc: '9/4 晚 20:30 惠州出发、武汉中转，9/5 周六 11:55 落地大同云冈机场。',
+        budget: '去程已订',
+        detail: '拿行李后打车去云冈石窟约 40 分钟。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '云冈石窟', lat: 40.1095, lng: 113.1228,
+        type: 'spot', time: '13:30',
+        desc: '世界文化遗产，北魏皇家石窟群，昙曜五窟 + 露天大佛必看。',
+        budget: '¥120/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Yungang_Grottoes_03.jpg?width=900',
+        xhsKeyword: '云冈石窟 攻略',
+        detail: '夏季 8:30–17:30（16:30 停止入园）。下午光线好，拍露天大佛不逆光。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '大同平城西环路亚朵酒店', lat: 40.0845, lng: 113.2780,
+        type: 'hotel', time: '17:30',
+        desc: '亚朵标准：双床房 + 洗衣房，西环路近古城。',
+        budget: '¥280–400/间/晚',
+        detail: '2 间房住 2 晚。备选：大同南站万达广场亚朵酒店。',
+        dianpingKeyword: '大同平城西环路亚朵酒店', pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '晚餐 · 凤临阁（鼓楼店）', lat: 40.0906, lng: 113.2950,
+        type: 'food', time: '18:30',
+        desc: '大同百年老号，百花烧麦一笼九种馅，人均 80–100。',
+        budget: '人均 ¥80–100',
+        dianpingKeyword: '凤临阁 大同', xhsKeyword: '凤临阁 大同 烧麦',
+        detail: '鼓楼西街，离古城墙近；排队人多，可先取号再逛。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '大同古城墙夜景', lat: 40.0910, lng: 113.2980,
+        type: 'spot', time: '20:30',
+        desc: '落地当天只做轻松夜游：登城墙看夜景，免费，可租自行车。',
+        budget: '免费', xhsKeyword: '大同古城墙 夜景'
+      }
+    ]
+  },
+  {
+    id: 2, label: 'D2', date: '9/6 周日', title: '悬空寺（不登临）· 大同古城',
+    color: '#2a9d8f', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hanging_Monastery_Shanxi.jpg?width=900',
+    locations: [
+      {
+        name: '悬空寺（只买门票 · 不登临）', lat: 39.6675, lng: 113.7085,
+        type: 'spot', time: '09:30',
+        desc: '悬崖上的千年古刹，李白题「壮观」。只买 25 元门票，在对面观景台拍全景，不登临。',
+        budget: '¥25/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hanging_Monastery_Shanxi.jpg?width=900',
+        xhsKeyword: '悬空寺 观景台 全景',
+        detail: '已确认不登临，省下 ¥100/人和排队时间。从大同开车约 1.5 小时，观景台 1–1.5 小时足够。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '午餐 · 喜晋道面馆', lat: 40.0920, lng: 113.2920,
+        type: 'food', time: '12:30',
+        desc: '刀削面为主的面馆，环境干净，人均 40–60。',
+        budget: '人均 ¥40–60',
+        dianpingKeyword: '喜晋道 大同', xhsKeyword: '大同 刀削面'
+      },
+      {
+        name: '华严寺', lat: 40.0936, lng: 113.2920,
+        type: 'spot', time: '14:30',
+        desc: '辽金皇家寺庙，薄伽教藏殿「合掌露齿菩萨」被誉为东方维纳斯。',
+        budget: '¥50/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Huayan_Monastery.jpg?width=900',
+        xhsKeyword: '大同华严寺 合掌露齿菩萨', pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '九龙壁', lat: 40.0956, lng: 113.2960,
+        type: 'spot', time: '15:45',
+        desc: '明代琉璃照壁，全国现存最大，免费。',
+        budget: '免费', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/9dragonwall_Datong_Shanxi.jpg?width=900',
+        xhsKeyword: '大同九龙壁'
+      },
+      {
+        name: '晚餐 · 凯鸽酒楼', lat: 40.0787, lng: 113.2970,
+        type: 'food', time: '18:00',
+        desc: '大同本地人聚餐地，烧麦、过油肉、黄米凉糕，人均 50–70。',
+        budget: '人均 ¥50–70',
+        dianpingKeyword: '凯鸽酒楼 大同', xhsKeyword: '凯鸽酒楼 大同'
+      },
+      {
+        name: '备选 · 应县木塔', lat: 39.5553, lng: 113.1812,
+        type: 'spot', time: '—',
+        desc: '世界现存最高最古木构塔，纯木无钉。想顺路就去（悬空寺回大同途中），累了就跳过。',
+        budget: '¥50/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/TheWoodenTowerOfYing1.jpg?width=900',
+        xhsKeyword: '应县木塔'
+      },
+      {
+        name: '备选 · 大同府铜火锅', lat: 40.0900, lng: 113.2940,
+        type: 'food', time: '—',
+        desc: '大同铜火锅涮羊肉，秋夜应景，人均 80–100。',
+        budget: '人均 ¥80–100', dianpingKeyword: '大同府铜火锅 大同'
+      }
+    ]
+  },
+  {
+    id: 3, label: 'D3', date: '9/7 周一', title: '大同 → 五台山（忻州）· 灵验寺庙',
+    color: '#7f6cdf', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Temples_of_Mount_Wutai.jpg?width=900',
+    locations: [
+      {
+        name: '包车/直通车 · 大同 → 五台山', lat: 39.0060, lng: 113.5950,
+        type: 'transport', time: '08:00',
+        desc: '约 3–3.5 小时到台怀镇。省钱走「大同景区直通车」¥75–99/人，或 4 人包车 ¥650–800/车。',
+        budget: '¥75–99/人',
+        detail: '建议 8:00 前出发，中午到台怀镇吃午饭。',
+        pay: { alipay: 1, wechat: 1, cash: 0.5 }
+      },
+      {
+        name: '午餐 · 一盏明灯全素斋', lat: 39.0010, lng: 113.5940,
+        type: 'food', time: '12:00',
+        desc: '台怀镇口碑素斋，台蘑、素肉、豆腐宴，人均 50–70。',
+        budget: '人均 ¥50–70',
+        dianpingKeyword: '一盏明灯全素斋 五台山', xhsKeyword: '五台山 素斋'
+      },
+      {
+        name: '五爷庙（万佛阁）', lat: 39.0025, lng: 113.5995,
+        type: 'spot', time: '13:30',
+        desc: '五台山香火最旺、以灵验闻名的寺庙，求财求事首选，免费。',
+        budget: '免费', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Wuye_Temple_in_Mount_Wutai.jpg?width=900',
+        xhsKeyword: '五爷庙 求财',
+        detail: '9/7 是周一，工作日线上预约可免大门票 135 元/人！提前在「五台山游客服务中心」公众号实名预约。',
+        pay: { alipay: 1, wechat: 1, cash: 1 }
+      },
+      {
+        name: '塔院寺 · 大白塔', lat: 39.0042, lng: 113.6005,
+        type: 'spot', time: '14:45',
+        desc: '五台山标志性大白塔，转塔祈福，释迦牟尼舍利塔。',
+        budget: '¥10/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Great_White_Pagoda2.JPG?width=900',
+        xhsKeyword: '五台山 大白塔 塔院寺', pay: { alipay: 1, wechat: 1, cash: 1 }
+      },
+      {
+        name: '显通寺', lat: 39.0053, lng: 113.6018,
+        type: 'spot', time: '15:45',
+        desc: '五台山最古寺院，无梁殿 + 铜殿，汉传佛教祖庭。',
+        budget: '¥10/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Xiantong_Temple1.JPG?width=900',
+        xhsKeyword: '五台山显通寺', pay: { alipay: 1, wechat: 1, cash: 1 }
+      },
+      {
+        name: '菩萨顶', lat: 39.0066, lng: 113.6040,
+        type: 'spot', time: '16:45',
+        desc: '清朝皇家黄庙，108 级台阶登顶，俯瞰台怀镇全景。',
+        budget: '¥10/人', xhsKeyword: '五台山菩萨顶 108台阶',
+        detail: '康熙、乾隆题字，台阶陡，注意体力。',
+        pay: { alipay: 1, wechat: 1, cash: 1 }
+      },
+      {
+        name: '晚餐 · 台蘑炖菜（台怀镇就近）', lat: 39.0000, lng: 113.5920,
+        type: 'food', time: '18:30',
+        desc: '台怀镇就近搜「台蘑」炖土鸡 / 台蘑面，人均 40–60。',
+        budget: '人均 ¥40–60',
+        dianpingKeyword: '五台山 台蘑', xhsKeyword: '五台山 台蘑'
+      },
+      {
+        name: '五台山万豪 / 台怀镇客栈', lat: 38.9850, lng: 113.5940,
+        type: 'hotel', time: '20:00',
+        desc: '五台山景区内无亚朵。万豪 ¥1,000–1,400/间，性价比选台怀镇花筑/四合院客栈 ¥300–500/间。',
+        budget: '¥300–500/间',
+        detail: '2 间房住 1 晚。客栈位置更方便（就在台怀镇），推荐客栈。',
+        dianpingKeyword: '五台山 客栈 台怀镇', pay: { alipay: 1, wechat: 1 }
+      }
+    ]
+  },
+  {
+    id: 4, label: 'D4', date: '9/8 周二', title: '黛螺顶 + 佛光寺 → 太原',
+    color: '#4a90d9', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dailuoding_Temple5.JPG?width=900',
+    locations: [
+      {
+        name: '黛螺顶（小朝台）', lat: 39.0068, lng: 113.6012,
+        type: 'spot', time: '08:00',
+        desc: '登黛螺顶 = 朝拜五方文殊。缆车往返 ¥85 省体力，也可徒步。',
+        budget: '门票¥8 + 缆车¥85',
+        img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dailuoding_Temple5.JPG?width=900',
+        xhsKeyword: '黛螺顶 小朝台 缆车',
+        detail: '缆车单程 50、往返 85；建议全程缆车省体力。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '佛光寺', lat: 38.8686, lng: 113.5810,
+        type: 'spot', time: '10:30',
+        desc: '梁思成、林徽因发现的唐代木构「中国第一国宝」，东大殿 + 彩塑 + 壁画。',
+        budget: '¥40/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Foguang_Temple_5.JPG?width=900',
+        xhsKeyword: '佛光寺 唐代木构 梁思成',
+        detail: '周一闭馆，9/8 周二开放。在五台山去太原的路上（豆村镇），顺路必停。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '午餐 · 豆村/服务区简餐', lat: 38.8700, lng: 113.2000,
+        type: 'food', time: '12:00',
+        desc: '豆村镇或高速服务区简餐，人均 20–30，别耽误下午路程。',
+        budget: '人均 ¥20–30', dianpingKeyword: '五台县 美食'
+      },
+      {
+        name: '包车 · 佛光寺 → 太原', lat: 38.1000, lng: 112.9000,
+        type: 'transport', time: '13:00',
+        desc: '约 2.5–3 小时到太原，4 人拼车约 ¥600–800/车。',
+        budget: '约 ¥700/车', pay: { alipay: 1, wechat: 1, cash: 0.5 }
+      },
+      {
+        name: '太原柳巷府西街亚朵X酒店', lat: 37.8736, lng: 112.5620,
+        type: 'hotel', time: '17:00',
+        desc: '亚朵X 升级版，评分 9.7，柳巷商圈。',
+        budget: '¥300–450/间',
+        detail: '2 间房住 2 晚。备选：太原柳巷亚朵酒店。',
+        dianpingKeyword: '太原柳巷府西街亚朵X酒店', pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '晚餐 · 并州大牌档', lat: 37.8670, lng: 112.5615,
+        type: 'food', time: '18:30',
+        desc: '太原人聚餐大牌档，过油肉、代县熬鱼、泡泡油糕，人均 70–80。',
+        budget: '人均 ¥70–80',
+        dianpingKeyword: '并州大牌档 太原', xhsKeyword: '并州大牌档 太原'
+      },
+      {
+        name: '钟楼街夜市', lat: 37.8670, lng: 112.5605,
+        type: 'spot', time: '20:30',
+        desc: '太原老城夜景 + 食品街小吃，碗托、灌肠尝鲜，免费。',
+        budget: '免费', xhsKeyword: '太原钟楼街 夜景', pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '备选 · 老太原菜馆（钟楼街店）', lat: 37.8668, lng: 112.5598,
+        type: 'food', time: '—',
+        desc: '糖醋丸子、过油肉、百花稍梅，人均 80。',
+        budget: '人均 ¥80', dianpingKeyword: '老太原菜馆 太原'
+      }
+    ]
+  },
+  {
+    id: 5, label: 'D5', date: '9/9 周三', title: '晋祠 + 山西博物院 · 太原老城',
+    color: '#5cb85c', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Jinci_Temple_%2854573021971%29.jpg?width=900',
+    locations: [
+      {
+        name: '晋祠', lat: 37.7088, lng: 112.4418,
+        type: 'spot', time: '08:00',
+        desc: '「晋祠三绝」：圣母殿、鱼沼飞梁、难老泉，宋塑侍女像必看。',
+        budget: '¥80/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Jinci_Temple_%2854573021971%29.jpg?width=900',
+        xhsKeyword: '晋祠 圣母殿 攻略',
+        detail: '8:00 开门就进，人少光线好，游览约 2–2.5 小时。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '山西博物院', lat: 37.8585, lng: 112.5278,
+        type: 'spot', time: '11:00',
+        desc: '晋魂通史展 + 镇馆之宝鸟尊，免费但需提前 3 天公众号实名预约。',
+        budget: '免费（需预约）', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Shanxi_Museum_-_bo_you.JPG?width=900',
+        xhsKeyword: '山西博物院 鸟尊',
+        detail: '9/9 周三开放（周一闭馆），预留 2 小时。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '午餐 · 并州大牌档', lat: 37.8670, lng: 112.5615,
+        type: 'food', time: '13:30',
+        desc: '过油肉、代县熬鱼、泡泡油糕，人均 70–80。',
+        budget: '人均 ¥70–80',
+        dianpingKeyword: '并州大牌档 太原', xhsKeyword: '并州大牌档 太原'
+      },
+      {
+        name: '柳巷 / 食品街 · 买伴手礼', lat: 37.8670, lng: 112.5605,
+        type: 'spot', time: '15:30',
+        desc: '买伴手礼：平遥牛肉、宁化府醋、太谷饼、闻喜煮饼，太原买比景区便宜。',
+        budget: '免费逛', xhsKeyword: '太原柳巷 伴手礼', pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '晚餐 · 老太原菜馆（钟楼街店）', lat: 37.8668, lng: 112.5598,
+        type: 'food', time: '18:00',
+        desc: '糖醋丸子、过油肉、百花稍梅，人均 80。',
+        budget: '人均 ¥80', dianpingKeyword: '老太原菜馆 太原'
+      }
+    ]
+  },
+  {
+    id: 6, label: 'D6', date: '9/10 周四', title: '返程 · 太原飞揭阳潮汕',
+    color: '#e76f51',
+    locations: [
+      {
+        name: '早餐 · 清和元（头脑/稍梅）', lat: 37.8695, lng: 112.5660,
+        type: 'food', time: '08:30',
+        desc: '太原特色早餐，头脑 + 稍梅，人均 30–50，就在柳巷附近。',
+        budget: '人均 ¥30–50',
+        dianpingKeyword: '清和元 太原', xhsKeyword: '太原 头脑 清和元'
+      },
+      {
+        name: '✈ 太原武宿机场 · 值机返揭阳', lat: 37.7469, lng: 112.6282,
+        type: 'transport', time: '12:00 值机',
+        desc: '10:30 从酒店出发（约 35 分钟车程），11:30 前到机场，12:00 值机，下午航班回揭阳潮汕。',
+        budget: '返程以实价为准',
+        detail: '柳巷酒店到机场约 35–40 分钟。建议 10:30 出发，留足安检时间。',
+        pay: { alipay: 1, wechat: 1 }
+      }
+    ]
+  }
+];
+
+function overviewContent() {
+  const photos = [];
+  DAYS.slice(1).forEach(d => d.locations.forEach(l => {
+    if (l.img && !photos.find(p => p.img === l.img)) photos.push({ name: l.name, img: l.img });
+  }));
+  return `
+<div class="hero"><h1>山西 6 天 5 晚 · 寺庙人文巡礼</h1><p class="subtitle">惠州出发 9/4–9/10 · 4 成人 · 大同 → 五台山（忻州）→ 太原 · 性价比 + 质价比</p></div>
+<div class="info-grid">
+  <div class="info-card"><div class="label">酒店</div><div class="value">大同亚朵 ×2 晚<br>台怀镇客栈 ×1 晚<br>太原亚朵X ×2 晚</div></div>
+  <div class="info-card"><div class="label">航班</div><div class="value">去 9/4 晚 惠州→大同（武汉中转）<br>9/5 周六 11:55 到云冈机场<br>回 9/10 周四 12:00 武宿值机返揭阳</div></div>
+  <div class="info-card"><div class="label">交通</div><div class="value">包车/直通车为主<br>大同→五台山约 3h<br>五台山→太原约 3h</div></div>
+  <div class="info-card"><div class="label">预估费用</div><div class="value">人均约 ¥3,400–3,800（含大交通）<br>4 人合计约 ¥13,600–15,200</div></div>
+</div>
+<div class="section-head">✈️ 航班（按你选定的时间）</div>
+<div class="pay-summary"><h4>去程 9/4（周五）晚</h4>
+· 20:30 惠州出发，武汉中转，9/5 周六 11:55 落地大同云冈机场。<br>
+· 落地即开始行程，当天下午逛云冈石窟。<br>
+<h4 style="margin-top:8px">返程 9/10（周四）</h4>
+· 12:00 到武宿机场值机，下午航班回揭阳潮汕。<br>
+· 建议 10:30 从柳巷酒店出发，留足 1.5–2 小时安检。<br>
+<span class="warn">⚠️ 机票具体班次与价格以你下单页面为准；台风季尾巴建议买延误险。</span></div>
+<div class="section-head">☀️ 天气提醒（9/5–9/10）</div>
+<div class="pay-summary"><h4>大同 9/5–9/7：晴到多云，8–26℃</h4>
+昼夜温差大，白天短袖 + 早晚薄外套。<br>
+<h4 style="margin-top:8px">五台山 9/7–9/8：台怀镇约 8–18℃</h4>
+山里明显更冷，早晚接近 10℃，建议带薄羽绒/抓绒，山顶风大。<br>
+<h4 style="margin-top:8px">太原 9/8–9/10：晴，12–27℃</h4>
+晋祠和古城墙户外体验佳。<br>
+<span class="ok-text">✔ 秋高气爽少雨，是错峰游山西的好窗口。</span></div>
+<div class="section-head">行程概览</div>
+<div class="day-list">${DAYS.slice(1).map(d=>`<div class="card" onclick="go(${d.id})"><div class="name"><span class="dot" style="background:${d.color}"></span>${d.label} · ${d.title}</div><div class="desc">${d.date}</div></div>`).join('')}</div>
+<div class="section-head">📸 打卡点预览（图片来自 Wikimedia Commons）</div>
+<div class="photo-grid">${photos.map(p=>`<div class="photo-card"><img loading="lazy" src="${p.img}" alt="${p.name}"><div>${p.name}</div></div>`).join('')}</div>
+<div class="section-head">支付提醒</div>
+<div class="pay-summary"><h4>🏔️ 五台山大门票（135 元 → 可免）</h4>
+9/7 周一为工作日，线上预约可免大门票，提前在「五台山游客服务中心」公众号实名预约，<span class="ok-text">4 人可省 ¥540</span>。小门票（塔院寺/显通寺/菩萨顶各 10 元）现场买。</div>
+<div class="pay-summary"><h4>🎫 悬空寺（已确认不登临）</h4>
+只买 ¥25 门票，在对面观景台拍全景，省 ¥100/人和排队时间。</div>
+<div class="pay-summary"><h4>🎟️ 其余门票 / 预约</h4>
+云冈 ¥120、华严寺 ¥50、佛光寺 ¥40、黛螺顶 ¥8（+缆车 ¥85）、晋祠 ¥80；山西博物院免费但需提前 3 天公众号预约（9/9 周三开放）。</div>
+<div class="pay-summary"><h4>💴 支付</h4>
+酒店/门票/大额消费支付宝微信皆可；寺庙功德箱、部分小摊备点现金零钱。</div>
+<div class="section-head">图例</div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-red)"></div>餐厅</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-blue)"></div>景点</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--text-tertiary)"></div>交通</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-orange)"></div>酒店</div>
+</div>
+<div class="section-head">💰 预算说明（4 人 / 人均）</div>
+<div class="pay-summary"><h4>人均约 ¥3,400–3,800（含大交通）</h4>
+· 大交通：去程惠州→大同（你已订）+ 返程揭阳，约 ¥1,300–1,700/人。<br>
+· 酒店：亚朵为主 + 五台山客栈，约 ¥900/人。<br>
+· 门票：约 ¥440/人（五台山免大门票、悬空寺不登临已省下）。<br>
+· 境内交通：直通车/包车/打车，约 ¥450/人。<br>
+· 餐饮：约 ¥500/人。<br>
+<span class="ok-text">✔ 五台山免大门票（省 ¥540）+ 悬空寺不登临（省 ¥400）已是最大的两个省钱点。</span></div>
+`;
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  ENGINE — Do not modify below unless customizing behavior   ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+const map = L.map('map', { center: [HOTEL.lat || 35.69, HOTEL.lng || 139.74], zoom: 12, zoomControl: false, attributionControl: true });
+L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+
+/* ── Geolocation ── */
+const LocateControl = L.Control.extend({
+  options: { position: 'bottomright' },
+  onAdd() {
+    const btn = L.DomUtil.create('button', 'locate-btn');
+    btn.innerHTML = '📍';
+    btn.title = '我的位置';
+    L.DomEvent.disableClickPropagation(btn);
+    btn.addEventListener('click', () => {
+      btn.classList.add('active');
+      map.locate({ setView: true, maxZoom: 15 });
+    });
+    this._btn = btn;
+    return btn;
+  }
+});
+new LocateControl().addTo(map);
+let locMarker, locCircle;
+map.on('locationfound', e => {
+  const r = e.accuracy / 2;
+  if (locMarker) { locMarker.setLatLng(e.latlng); locCircle.setLatLng(e.latlng).setRadius(r); }
+  else {
+    locMarker = L.marker(e.latlng, {
+      icon: L.divIcon({ className:'', html:'<div style="width:14px;height:14px;border-radius:50%;background:#007aff;border:2.5px solid #fff;box-shadow:0 0 6px rgba(0,122,255,.5)"></div><div class="loc-pulse" style="position:absolute;top:0;left:0"></div>', iconSize:[14,14], iconAnchor:[7,7] }),
+      zIndexOffset: 2000
+    }).addTo(map);
+    locCircle = L.circle(e.latlng, { radius: r, color: '#007aff', fillColor: '#007aff', fillOpacity: .08, weight: 1 }).addTo(map);
+  }
+});
+map.on('locationerror', () => {});
+
+function icon(color, emoji) {
+  return L.divIcon({ className: '', html: `<div style="width:28px;height:28px;border-radius:50%;background:${color};border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.18)">${emoji||''}</div>`, iconSize: [28,28], iconAnchor: [14,14], popupAnchor: [0,-16] });
+}
+
+if (HOTEL.lat) L.marker([HOTEL.lat, HOTEL.lng], { icon: icon('#ff9500','🏨'), zIndexOffset: 1000 }).addTo(map).bindPopup(`<b>${HOTEL.name}</b>`);
+
+let markers = [], polylines = [];
+const emojis = { food:'🍽️', spot:'📍', hotel:'🏨', transport:'🚃', drink:'🍺' };
+
+function clearMap() { markers.forEach(m=>map.removeLayer(m)); polylines.forEach(p=>map.removeLayer(p)); markers=[]; polylines=[]; }
+
+function showDay(idx) {
+  clearMap();
+  if (idx === 0) {
+    const pts = [];
+    DAYS.forEach(d => d.locations.forEach(l => { if(l.lat) pts.push([l.lat,l.lng]); }));
+    if(pts.length) map.fitBounds(pts, {padding:[30,30]});
+    DAYS.slice(1).forEach(d => {
+      d.locations.filter(l=>l.time!=='—').forEach(l => {
+        const m = L.circleMarker([l.lat,l.lng], { radius:4, fillColor:d.color, color:'#fff', weight:1.5, fillOpacity:.9 }).addTo(map).bindPopup(`<b>${l.name}</b><br><span style="color:#86868b">${d.label}</span>`);
+        markers.push(m);
+      });
+    });
+    return;
+  }
+  const day = DAYS.find(d=>d.id===idx);
+  if(!day) return;
+  const coords = [];
+  day.locations.forEach(l => {
+    if(!l.lat) return;
+    const m = L.marker([l.lat,l.lng], { icon: icon(day.color, emojis[l.type]||'📌') }).addTo(map);
+    const gmapQ = l.gmap||encodeURIComponent(l.name+' 山西');
+    m.bindPopup(`<b>${l.name}</b>${l.time!=='—'?'<br><span style="color:#86868b">'+l.time+'</span>':''}<br>${l.desc}${l.budget?'<br><span style="color:#ff9500">'+l.budget+'</span>':''}<br><a href="#" onclick="event.preventDefault();openAS('${l.name.replace(/'/g,"\\'")}',${l.lat},${l.lng},'${gmapQ}')">📍 导航</a>${l.xhs?' · <a href="'+l.xhs+'" target="_blank">📕 小红书</a>':''}`);
+    markers.push(m);
+    if(l.time!=='—') coords.push([l.lat,l.lng]);
+  });
+  if(coords.length>1) { const pl = L.polyline(coords, { color:day.color, weight:2.5, opacity:.5, dashArray:'6,5' }).addTo(map); polylines.push(pl); }
+  if(coords.length) map.fitBounds(coords, { padding:[40,40], maxZoom:14 });
+}
+
+// ══════════ RENDER ══════════
+function payChips(pay) {
+  if(!pay) return '';
+  let h = '<div class="pays">';
+  const m = { cash:'💴', card:'💳', suica:'Suica', paypay:'PayPay', alipay:'支付宝', wechat:'微信' };
+  for(const [k,label] of Object.entries(m)) {
+    if(pay[k]!==undefined) { const c = pay[k]===1?'ok':pay[k]===0.5?'idk':'no'; h += `<span class="pay ${c}">${label}</span>`; }
+  }
+  return h+'</div>';
+}
+
+// ── 运行环境检测：在第三方 App 的 WebView 里，自定义 scheme 基本会被拦截 ──
+const IN_APP_WEBVIEW = (() => {
+  const ua = (navigator.userAgent || '').toLowerCase();
+  return /micromessenger|xhs|xhsdiscover|discover\/|tiktok|aweme|weibo|qq\/|qqbrowser|alipayclient|dingtalk|lark|feishu|ucbrowser|baiduboxapp|toutiao|newsarticle/.test(ua);
+})();
+
+function xhsKeyword(loc) {
+  if(loc.xhsKeyword) return loc.xhsKeyword.trim();
+  return (loc.name||'').replace(/⭐.*$/g,'').replace(/（.*?）/g,'').replace(/\(.*?\)/g,'').replace(/\s+/g,' ').trim();
+}
+function xhsAppUrl(loc) { return `xhsdiscover://search/result?keyword=${encodeURIComponent(xhsKeyword(loc))}&target_search=notes&source=deeplink`; }
+function xhsWebUrl(loc) { return `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(xhsKeyword(loc))}&source=web_explore_feed`; }
+
+function dpKeyword(loc) {
+  if(loc.dianpingKeyword) return loc.dianpingKeyword.trim();
+  return (loc.name||'').replace(/⭐.*$/g,'').replace(/（.*?）/g,'').replace(/\(.*?\)/g,'').replace(/\s+/g,' ').trim();
+}
+function dpAppUrl(loc) { return `dianping://searchshoplist?keyword=${encodeURIComponent(dpKeyword(loc))}`; }
+function dpWebUrl(loc) { return `https://m.dianping.com/searchshop?keyword=${encodeURIComponent(dpKeyword(loc))}`; }
+
+window._extLocs = {};
+DAYS.forEach(d => d.locations.forEach(l => { window._extLocs[`${d.id}::${l.name}`] = l; }));
+window._xhsLocs = window._extLocs;
+
+function openExt(key, kind) {
+  const loc = window._extLocs[key]; if(!loc) return false;
+  if (IN_APP_WEBVIEW) {
+    window.location.href = kind==='dp' ? dpWebUrl(loc) : xhsWebUrl(loc);
+  } else {
+    window.location.href = kind==='dp' ? dpAppUrl(loc) : xhsAppUrl(loc);
+  }
+  return false;
+}
+function openXhs(key) { return openExt(key, 'xhs'); }
+function openDp(key)  { return openExt(key, 'dp'); }
+
+function locCard(loc, dayIdx) {
+  const dot = loc.type==='food'?'food':loc.type==='spot'?'spot':loc.type==='drink'?'drink':loc.type==='hotel'?'hotel':'transport';
+  const bdg = loc.type==='food'?'<span class="badge food">餐</span>':loc.type==='spot'?'<span class="badge spot">景</span>':loc.type==='drink'?'<span class="badge drink">饮</span>':'';
+  const uid = `d${dayIdx}-${loc.name.replace(/\W/g,'')}`;
+  const locKey = `${dayIdx}::${loc.name}`;
+  const gmapQ = loc.gmap||encodeURIComponent(loc.name+' 山西');
+  let lnk = `<button class="btn nav" onclick="openAS('${loc.name.replace(/'/g,"\\'")}',${loc.lat},${loc.lng},'${gmapQ}')">📍 导航</button>`;
+  if(loc.xhs||loc.xhsKeyword) {
+    const xhsHref = IN_APP_WEBVIEW ? xhsWebUrl(loc) : xhsAppUrl(loc);
+    const xhsLabel = IN_APP_WEBVIEW ? '📕 小红书' : '📕 小红书 App';
+    lnk += `<a href="${xhsHref}" onclick="return openXhs('${locKey.replace(/'/g,"\\'")}')" class="btn xhs">${xhsLabel}</a>`;
+  }
+  const dpEnabled = loc.dianping !== false &&
+    (loc.dianping || loc.dianpingKeyword || loc.type==='food' || loc.type==='drink');
+  if(dpEnabled) {
+    const dpHref = IN_APP_WEBVIEW ? dpWebUrl(loc) : dpAppUrl(loc);
+    const dpLabel = IN_APP_WEBVIEW ? '🍜 大众点评' : '🍜 大众点评 App';
+    lnk += `<a href="${dpHref}" onclick="return openDp('${locKey.replace(/'/g,"\\'")}')" class="btn dp">${dpLabel}</a>`;
+  }
+  if(loc.reserve) lnk += `<a href="${loc.reserve}" target="_blank" class="btn rsv">📅 预约</a>`;
+  const photo = loc.img ? `<img class="card-photo" loading="lazy" src="${loc.img}" alt="${loc.name}" onclick="event.stopPropagation()">` : '';
+  return `<div class="tl-item"><div class="tl-dot ${dot}"></div><div class="card" onclick="if(!event.target.closest('.btn,.links'))toggle('${uid}')">${photo}<div class="time">${loc.time!=='—'?loc.time:'备选'}</div><div class="name">${bdg} ${loc.name}</div><div class="desc">${loc.desc}</div>${loc.budget?'<div class="budget">'+loc.budget+'</div>':''}${payChips(loc.pay)}<div class="links">${lnk}</div>${loc.detail?'<div class="details" id="'+uid+'">'+loc.detail.replace(/\n/g,'<br>')+'</div>':''}</div></div>`;
+}
+
+function renderDay(idx) {
+  const d = DAYS.find(x=>x.id===idx); if(!d) return '';
+  const main = d.locations.filter(l=>l.time!=='—');
+  const alt = d.locations.filter(l=>l.time==='—');
+  let h = (d.cover?`<img class="day-cover" src="${d.cover}" alt="${d.title}" onclick="go(0)">`:'') + `<div class="day-head"><h2>${d.title}</h2><p>${d.date}</p></div>`;
+  if(main.length) { h += '<div class="section-head">行程</div><div class="timeline">'; main.forEach(l => h += locCard(l, idx)); h += '</div>'; }
+  if(alt.length) { h += '<div class="section-head">备选</div><div class="timeline">'; alt.forEach(l => h += locCard(l, idx)); h += '</div>'; }
+  return h;
+}
+
+// ══════════ NAV ══════════
+let cur = 0;
+const tabsEl = document.getElementById('tabs');
+const contentEl = document.getElementById('content');
+
+DAYS.forEach(d => {
+  const btn = document.createElement('button');
+  btn.className = 'tab' + (d.id===0?' active':'');
+  btn.dataset.day = d.id;
+  btn.textContent = d.label;
+  tabsEl.appendChild(btn);
+});
+
+function go(idx) {
+  cur = idx;
+  tabsEl.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', +t.dataset.day===idx));
+  contentEl.innerHTML = idx===0 ? overviewContent() : renderDay(idx);
+  showDay(idx);
+  contentEl.scrollTo({top:0});
+  const tab = tabsEl.querySelector(`[data-day="${idx}"]`);
+  if(tab) tab.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}
+
+function toggle(id) { const el=document.getElementById(id); if(el) el.classList.toggle('closed'); }
+
+tabsEl.addEventListener('click', e => { const t=e.target.closest('.tab'); if(t) go(+t.dataset.day); });
+
+go(0);
+
+/* ── Action Sheet for Navigation ── */
+const asOverlay = document.createElement('div');
+asOverlay.className = 'as-overlay';
+asOverlay.innerHTML = `<div class="as-sheet">
+  <div class="as-group" id="as-opts"></div>
+  <div class="as-group"><button class="as-item as-cancel" onclick="closeAS()">取消</button></div>
+</div>`;
+document.body.appendChild(asOverlay);
+asOverlay.addEventListener('click', e => { if (e.target === asOverlay) closeAS(); });
+
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+function amapAppUrl(name, lat, lng) {
+  const scheme = IS_IOS ? 'iosamap' : 'androidamap';
+  return `${scheme}://viewMap?sourceApplication=trip&poiname=${encodeURIComponent(name)}&lat=${lat}&lon=${lng}&dev=0`;
+}
+function amapWebUrl(name, lat, lng) {
+  return `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(name)}&src=trip&coordinate=wgs84&callnative=1`;
+}
+function openAmap(name, lat, lng) {
+  if (IN_APP_WEBVIEW) { window.open(amapWebUrl(name, lat, lng)); return; }
+  window.location.href = amapAppUrl(name, lat, lng);
+}
+
+function openAS(name, lat, lng, gmap) {
+  const q = gmap || encodeURIComponent(name + ' 山西');
+  const encName = encodeURIComponent(name);
+  const safeName = name.replace(/'/g,"\\'");
+  // WebView 内 maps:// 通常被拦截，改用 https Apple Maps URL —— iOS 系统会自动拉起 Apple Maps
+  const appleUrl = IN_APP_WEBVIEW
+    ? `https://maps.apple.com/?q=${lat},${lng}&ll=${lat},${lng}&name=${encName}`
+    : `maps://maps.apple.com/?q=${lat},${lng}&name=${encName}`;
+  const googleUrl = `https://www.google.com/maps/search/?api=1&query=${q}`;
+  document.getElementById('as-opts').innerHTML =
+    `<button class="as-item" onclick="window.open('${appleUrl}');closeAS()">🍎 Apple Maps</button>` +
+    `<button class="as-item" onclick="window.open('${googleUrl}');closeAS()">🗺️ Google Maps</button>` +
+    `<button class="as-item" onclick="openAmap('${safeName}',${lat},${lng});closeAS()">🧭 高德地图 App</button>`;
+  asOverlay.classList.add('show');
+}
+function closeAS() { asOverlay.classList.remove('show'); }
+</script>
+</body>
+</html>
