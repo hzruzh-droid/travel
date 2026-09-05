@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>山西 7 天 6 晚 · 寺庙人文巡礼（惠州出发 · A返揭阳/B续临汾）</title>
-<meta name="description" content="惠州出发 9/4-9/10，大同、五台山、太原、临汾，灵验寺庙+人文自然，D6 分两组（A返揭阳/B续临汾），性价比攻略与交互地图。">
+<title>山西 7 天 6 晚 · 寺庙人文 + 临汾一日游（惠州出发）</title>
+<meta name="description" content="惠州出发 9/4-9/10，大同、五台山、太原、临汾一日游，灵验寺庙+壶口瀑布，D6 分两组（A返潮州/B续太原），美食餐厅+推荐菜品，交互地图。">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
@@ -56,7 +56,7 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* ── Map ── */
-#map { width: 100%; height: 40vh; min-height: 280px; position: sticky; top: 0; z-index: 100; }
+#map { width: 100%; height: 40vh; min-height: 280px; position: relative; z-index: 1; }
 .locate-btn {
   width: 36px; height: 36px; border-radius: 8px;
   background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
@@ -79,7 +79,7 @@ a:hover { text-decoration: underline; }
 .tabs {
   display: flex; gap: 6px; padding: 12px 16px; overflow-x: auto; -webkit-overflow-scrolling: touch;
   background: rgba(255,255,255,.85); -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px); position: sticky; top: 40vh; z-index: 99;
+  backdrop-filter: saturate(180%) blur(20px); position: sticky; top: 0; z-index: 120;
   border-bottom: .5px solid var(--separator); scrollbar-width: none;
 }
 .tabs::-webkit-scrollbar { display: none; }
@@ -138,6 +138,8 @@ a:hover { text-decoration: underline; }
 .card-photo { width: calc(100% + 32px); height: 170px; object-fit: cover; display: block; margin: -14px -16px 10px; }
 .intro { margin-top: 8px; padding: 9px 11px; background: var(--bg-grouped); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
 .intro b { color: var(--text-primary); }
+.dish { margin-top: 6px; font-size: 12.5px; color: var(--tint-red); line-height: 1.45; }
+.dish b { color: var(--text-primary); }
 
 /* ── Day cover ── */
 .day-cover { width: 100%; height: 180px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 14px; display: block; }
@@ -273,7 +275,7 @@ const DAYS = [
         desc: '世界文化遗产，北魏皇家石窟群，昙曜五窟 + 露天大佛必看。',
         budget: '¥120/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Yungang_Grottoes_03.jpg?width=900',
         xhsKeyword: '云冈石窟 攻略',
-        intro: '云冈石窟开凿于北魏（约公元460年），由昙曜主持，是佛教艺术东传中国后第一处大型皇家石窟，2001年入列世界文化遗产。现存主要洞窟45个、造像5.1万余尊，尤以第16—20窟「昙曜五窟」和第20窟露天大佛最具震撼。它融合印度、中亚与汉地艺术，见证北魏由平城（大同）统一北方的辉煌，是读懂佛教东渐与民族交融的「石史」。',
+        intro: '云冈石窟开凿于北魏（约公元460年），由昙曜主持，是佛教艺术东传中国后第一处大型皇家石窟，2001年入列世界文化遗产。现存主要洞窟45个、造像5.1万余尊，尤以第16—20窟「昙曜五窟」和第20窟露天大佛最具震撼。它融合印度、中亚与汉地艺术，见证北魏由平城（大同）统一北方的辉煌。',
         video: 'https://www.bilibili.com/video/BV1v3J9zVEWj/',
         detail: '夏季 8:30–17:30（16:30 停止入园）。下午光线好，拍露天大佛不逆光。',
         pay: { alipay: 1, wechat: 1 }
@@ -283,83 +285,109 @@ const DAYS = [
         type: 'hotel', time: '17:30',
         desc: '2026 年新开，极简治愈风，近古城北门/清远门，步行即可上城墙。',
         budget: '约 ¥250–400/间/晚',
-        detail: '魏都大道云顶雅园，2 间房住 1 晚。打车到华严寺/鼓楼起步价，去云冈也方便。',
+        detail: '魏都大道云顶雅园，2 间房住 1 晚。打车到华严寺/鼓楼起步价。',
         dianpingKeyword: '予安境酒店 大同古城清远门店', pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '晚餐 · 凤临阁（鼓楼店）', lat: 40.0906, lng: 113.2950,
-        type: 'food', time: '18:30',
-        desc: '大同百年老号，百花烧麦一笼九种馅，人均 80–100。',
-        budget: '人均 ¥80–100',
+        name: '大同古城墙夜景', lat: 40.0910, lng: 113.2980,
+        type: 'spot', time: '20:00',
+        desc: '落地当天只做轻松夜游：登城墙看夜景，免费，可租自行车。',
+        budget: '免费', xhsKeyword: '大同古城墙 夜景',
+        intro: '大同古城墙始建于明洪武五年（1372年），由徐达在历代旧城基础上增筑，周长7270米，比西安城墙更高、最宽处16.6米。城设四门、瓮城、月城、角楼，气势恢宏。夜间登城，环看古城灯火与修复后的街巷肌理，最能感受这座北魏故都、明代九边重镇的历史纵深。',
+        video: 'https://www.bilibili.com/video/BV1bb4y1i73R/'
+      },
+      {
+        name: '凤临阁（鼓楼店）', lat: 40.0906, lng: 113.2950,
+        type: 'food', time: '晚餐',
+        desc: '大同百年老号，百花烧麦一笼九种馅，本地人+游客都认。',
+        budget: '人均 ¥80–100', dish: '百花烧麦（一笼九种馅）、过油肉、糖醋丸子、羊杂粉',
         dianpingKeyword: '凤临阁 大同', xhsKeyword: '凤临阁 大同 烧麦',
         detail: '鼓楼西街，离古城墙近；排队人多，可先取号再逛。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '大同古城墙夜景', lat: 40.0910, lng: 113.2980,
-        type: 'spot', time: '20:30',
-        desc: '落地当天只做轻松夜游：登城墙看夜景，免费，可租自行车。',
-        budget: '免费', xhsKeyword: '大同古城墙 夜景',
-        intro: '大同古城墙始建于明洪武五年（1372年），由徐达在历代旧城基础上增筑，周长7270米，比西安城墙更高、最宽处16.6米。城设四门、瓮城、月城、角楼，气势恢宏。夜间登城，环看古城灯火与修复后的街巷肌理，最能感受这座北魏故都、明代九边重镇的历史纵深。',
-        video: 'https://www.bilibili.com/video/BV1bb4y1i73R/'
+        name: '龙聚祥烧麦馆（鼓楼店）', lat: 40.0900, lng: 113.2940,
+        type: 'food', time: '—',
+        desc: '山西烧麦名店，皮薄爆汁，鼓楼店人少可优先。',
+        budget: '人均 ¥70', dish: '羊肉烧麦、糖醋里脊、沙葱莜面、蒙古奶茶',
+        dianpingKeyword: '龙聚祥烧麦馆 大同', xhsKeyword: '龙聚祥 大同 烧麦'
+      },
+      {
+        name: '凯鸽酒楼', lat: 40.0787, lng: 113.2970,
+        type: 'food', time: '—',
+        desc: '大同本地人聚餐地，分量实、便宜。',
+        budget: '人均 ¥50–70', dish: '过油肉、风沙鸡、黄米凉糕',
+        dianpingKeyword: '凯鸽酒楼 大同', xhsKeyword: '凯鸽酒楼 大同'
+      },
+      {
+        name: '喜晋道面馆', lat: 40.0920, lng: 113.2920,
+        type: 'food', time: '—',
+        desc: '环境干净的面馆，据说是刀削面里的「爱马仕」，与凤临阁同源。',
+        budget: '人均 ¥40–60', dish: '传统肉沫刀削面',
+        dianpingKeyword: '喜晋道 大同', xhsKeyword: '大同 刀削面 喜晋道'
+      },
+      {
+        name: '沙棘冰淇淋（大同古城）', lat: 40.0900, lng: 113.2960,
+        type: 'food', time: '小吃',
+        desc: '古城特色沙棘冰淇淋，酸甜解腻，饭后边走边吃。',
+        budget: '约 ¥15', dish: '沙棘冰淇淋',
+        xhsKeyword: '大同 沙棘冰淇淋'
       }
     ]
   },
   {
-    id: 2, label: 'D2', date: '9/6 周日', title: '悬空寺（不登临）· 大同古城 · 取车',
-    color: '#2a9d8f', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hanging_Monastery_Shanxi.jpg?width=900',
+    id: 2, label: 'D2', date: '9/6 周日', title: '应县木塔 + 悬空寺 + 华严寺 · 取车',
+    color: '#2a9d8f', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/TheWoodenTowerOfYing1.jpg?width=900',
     locations: [
       {
         name: '🚗 取车 · 大同（D2–D4 租车 3 天）', lat: 40.0930, lng: 113.2890,
-        type: 'transport', time: '08:30',
-        desc: '今天起租车自驾 3 天，D4 在太原异地还车。建议 7 座 SUV 放 4 人 + 行李。',
+        type: 'transport', time: '08:00',
+        desc: '今天 8:00 取车出发，自驾 3 天，D4 在太原异地还车。建议 7 座 SUV 放 4 人 + 行李。',
         budget: '租车 ¥350–500/天',
         detail: '提前在神州/一嗨下单并确认「异地还车」费用。带好驾驶证与身份证。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '悬空寺（只买门票 · 不登临）', lat: 39.6675, lng: 113.7085,
+        name: '应县木塔（佛宫寺释迦塔）', lat: 39.5553, lng: 113.1812,
         type: 'spot', time: '09:30',
+        desc: '世界现存最高最古木构塔，纯木无钉，顺路第一站。',
+        budget: '¥50/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/TheWoodenTowerOfYing1.jpg?width=900',
+        xhsKeyword: '应县木塔',
+        intro: '应县木塔本名佛宫寺释迦塔，建于辽清宁二年（1056年），是世界现存最高、最古老的木构塔式建筑，通高67.31米，纯木结构、不用一钉。历经千年地震、战火仍屹立，与比萨斜塔、埃菲尔铁塔并称「世界三大奇塔」，是古建力学的巅峰。',
+        video: 'https://www.bilibili.com/video/BV1eHn8zGE45/',
+        detail: '大同开车约 1.5 小时。游览约 1 小时，不进塔身。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '悬空寺（只买门票 · 不登临）', lat: 39.6675, lng: 113.7085,
+        type: 'spot', time: '11:30',
         desc: '悬崖上的千年古刹，李白题「壮观」。只买 25 元门票，在对面观景台拍全景，不登临。',
         budget: '¥25/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hanging_Monastery_Shanxi.jpg?width=900',
         xhsKeyword: '悬空寺 观景台 全景',
         intro: '悬空寺建于北魏后期，距今1500余年，位于恒山翠屏峰半崖，以「半插飞梁」巧借岩石托起楼阁，远看如悬空中。李白题「壮观」，徐霞客叹为「天下巨观」。寺内儒释道三教合一，是全国现存最早、保存最完好的高空木构摩崖建筑，堪称力学与信仰的奇观。',
         video: 'https://www.bilibili.com/video/BV1JuHxeJEPw/',
-        detail: '已确认不登临，省下 ¥100/人和排队时间。从大同开车约 1.5 小时，观景台 1–1.5 小时足够。',
+        detail: '已确认不登临，省下 ¥100/人和排队时间。观景台 1–1.5 小时足够。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '午餐 · 喜晋道面馆', lat: 40.0920, lng: 113.2920,
-        type: 'food', time: '12:30',
-        desc: '刀削面为主的面馆，环境干净，人均 40–60。',
-        budget: '人均 ¥40–60',
-        dianpingKeyword: '喜晋道 大同', xhsKeyword: '大同 刀削面'
-      },
-      {
         name: '华严寺', lat: 40.0936, lng: 113.2920,
-        type: 'spot', time: '14:30',
+        type: 'spot', time: '15:30',
         desc: '辽金皇家寺庙，薄伽教藏殿「合掌露齿菩萨」被誉为东方维纳斯。',
         budget: '¥50/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Huayan_Monastery.jpg?width=900',
         xhsKeyword: '大同华严寺 合掌露齿菩萨',
         intro: '华严寺始建于辽重熙七年（1038年），是辽金时期皇家寺院，坐西朝东体现契丹崇日习俗。薄伽教藏殿内「合掌露齿菩萨」被誉为「东方维纳斯」，神态灵动；殿内还藏有辽代小木作天宫楼阁。它是现存最完整的辽金寺院格局之一，也是大同古城的宗教与艺术地标。',
         video: 'https://www.bilibili.com/video/BV1Q35NznEMC/',
+        detail: '悬空寺回大同约 1.5 小时，下午逛华严寺约 1.5 小时。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
         name: '九龙壁', lat: 40.0956, lng: 113.2960,
-        type: 'spot', time: '15:45',
-        desc: '明代琉璃照壁，全国现存最大，免费。',
+        type: 'spot', time: '—',
+        desc: '明代琉璃照壁，全国现存最大，免费，15 分钟即可。',
         budget: '免费', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/9dragonwall_Datong_Shanxi.jpg?width=900',
         xhsKeyword: '大同九龙壁',
         intro: '大同九龙壁建于明洪武年间，为代王府门前照壁，是我国现存最大、年代最久的九龙壁。壁长45.5米，由426块琉璃拼成九条巨龙，腾云驾雾、色彩绚丽。它既是明代藩王制度与琉璃烧造工艺的见证，也是大同作为明代九边重镇首府的历史缩影。',
         video: 'https://www.bilibili.com/video/BV1zJ4m1N7DA/'
-      },
-      {
-        name: '晚餐 · 凯鸽酒楼', lat: 40.0787, lng: 113.2970,
-        type: 'food', time: '18:00',
-        desc: '大同本地人聚餐地，烧麦、过油肉、黄米凉糕，人均 50–70。',
-        budget: '人均 ¥50–70',
-        dianpingKeyword: '凯鸽酒楼 大同', xhsKeyword: '凯鸽酒楼 大同'
       },
       {
         name: '大同温德姆至尊豪廷大酒店', lat: 40.0430, lng: 113.3330,
@@ -370,83 +398,102 @@ const DAYS = [
         dianpingKeyword: '大同温德姆至尊豪廷大酒店', pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '备选 · 应县木塔', lat: 39.5553, lng: 113.1812,
-        type: 'spot', time: '—',
-        desc: '世界现存最高最古木构塔，纯木无钉。想顺路就去（悬空寺回大同途中），累了就跳过。',
-        budget: '¥50/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/TheWoodenTowerOfYing1.jpg?width=900',
-        xhsKeyword: '应县木塔',
-        intro: '应县木塔本名佛宫寺释迦塔，建于辽清宁二年（1056年），是世界现存最高、最古老的木构塔式建筑，通高67.31米，纯木结构、不用一钉。历经千年地震、战火仍屹立，与比萨斜塔、埃菲尔铁塔并称「世界三大奇塔」，是古建力学的巅峰。',
-        video: 'https://www.bilibili.com/video/BV1eHn8zGE45/'
+        name: '浑源小媳妇凉粉', lat: 39.7000, lng: 113.6900,
+        type: 'food', time: '午餐',
+        desc: '浑源凉粉代表店，悬空寺/恒山脚下顺路吃。',
+        budget: '人均 ¥20–30', dish: '浑源凉粉、粉坨、油泼辣子',
+        dianpingKeyword: '浑源小媳妇凉粉', xhsKeyword: '浑源凉粉'
       },
       {
-        name: '备选 · 大同府铜火锅', lat: 40.0900, lng: 113.2940,
+        name: '东方削面 / 老柴削面', lat: 40.0880, lng: 113.2950,
         type: 'food', time: '—',
-        desc: '大同铜火锅涮羊肉，秋夜应景，人均 80–100。',
-        budget: '人均 ¥80–100', dianpingKeyword: '大同府铜火锅 大同'
+        desc: '本地人常吃的平价刀削面，10 元左右一碗，别去景区高价面馆。',
+        budget: '人均 ¥10–15', dish: '肉沫刀削面、卤蛋',
+        dianpingKeyword: '东方削面 大同', xhsKeyword: '大同 东方削面'
+      },
+      {
+        name: '紫泥369粗粮季', lat: 40.0850, lng: 113.2900,
+        type: 'food', time: '—',
+        desc: '粗粮主食餐厅，碳烤肘子出名。',
+        budget: '人均 ¥60–80', dish: '碳烤肘子、杂粮拼盘',
+        dianpingKeyword: '紫泥369 大同', xhsKeyword: '紫泥369 粗粮季'
+      },
+      {
+        name: '大同府铜火锅', lat: 40.0900, lng: 113.2940,
+        type: 'food', time: '—',
+        desc: '老大同铜火锅涮羊肉，秋夜应景。',
+        budget: '人均 ¥80–100', dish: '铜火锅涮羊肉、粉条、酸菜',
+        dianpingKeyword: '大同府铜火锅', xhsKeyword: '大同 铜火锅'
+      },
+      {
+        name: '老孙家羊杂', lat: 40.0900, lng: 113.2960,
+        type: 'food', time: '—',
+        desc: '大同羊杂粉汤硬核早餐/宵夜。',
+        budget: '人均 ¥20–30', dish: '羊杂粉汤、油饼',
+        dianpingKeyword: '老孙家羊杂 大同', xhsKeyword: '大同 羊杂'
       }
     ]
   },
   {
-    id: 3, label: 'D3', date: '9/7 周一', title: '大同 → 五台山 · 黛螺顶 + 五爷庙',
-    color: '#7f6cdf', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Temples_of_Mount_Wutai.jpg?width=900',
+    id: 3, label: 'D3', date: '9/7 周一', title: '大同 → 五台山 · 黛螺顶',
+    color: '#7f6cdf', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dailuoding_Temple5.JPG?width=900',
     locations: [
       {
         name: '🚗 自驾 · 大同 → 五台山台怀镇', lat: 39.0060, lng: 113.5950,
-        type: 'transport', time: '10:00',
-        desc: '10:00 出发，自驾约 3–3.5 小时到台怀镇。',
+        type: 'transport', time: '11:00',
+        desc: '11:00 出发，自驾约 3–3.5 小时到台怀镇。',
         budget: '租车已含',
-        detail: '走高速，中途服务区可停。建议出发前加满油。',
+        detail: '走高速，中途服务区可停。出发前加满油。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '午餐 · 一盏明灯全素斋', lat: 39.0010, lng: 113.5940,
-        type: 'food', time: '13:00',
-        desc: '台怀镇口碑素斋，台蘑、素肉、豆腐宴，人均 50–70。',
-        budget: '人均 ¥50–70',
-        dianpingKeyword: '一盏明灯全素斋 五台山', xhsKeyword: '五台山 素斋'
-      },
-      {
         name: '黛螺顶（小朝台）', lat: 39.0068, lng: 113.6012,
-        type: 'spot', time: '14:00',
+        type: 'spot', time: '14:30',
         desc: '到五台山后先爬黛螺顶。登顶即朝拜五方文殊，缆车往返 ¥85 省体力。',
         budget: '门票¥8 + 缆车¥85',
         img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dailuoding_Temple5.JPG?width=900',
         xhsKeyword: '黛螺顶 小朝台 缆车',
         intro: '黛螺顶位于五台山台怀镇东山顶，登顶需经「大智路」1080级石阶。因寺内供有五方文殊，登一次黛螺顶即相当于「小朝台」——朝拜五方文殊菩萨。缆车可直达，视野开阔，俯瞰台怀镇与群山，是五台山最灵验、最具仪式感的朝圣体验之一。',
         video: 'https://www.bilibili.com/video/BV1bZ421s7YN/',
-        detail: '下午先登黛螺顶（错开上午人潮），时间从容。缆车单程 50、往返 85。',
+        detail: '11:00 出发，约 14:30 到；下午登黛螺顶（缆车往返约 1.5–2 小时）。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
         name: '五爷庙（万佛阁）', lat: 39.0025, lng: 113.5995,
-        type: 'spot', time: '16:30',
-        desc: '按时间推荐必去：五台山香火最旺、以灵验闻名的寺庙，求财求事首选，免费。',
+        type: 'spot', time: '—',
+        desc: '五台山香火最旺、以灵验闻名的寺庙，求财求事首选；黛螺顶下来若时间允许就拜。',
         budget: '免费', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Wuye_Temple_in_Mount_Wutai.jpg?width=900',
         xhsKeyword: '五爷庙 求财',
-        intro: '五爷庙（万佛阁）是五台山香火最旺的寺院，供奉龙五爷（文殊菩萨化身），以「有求必应」闻名，求财、求事业、求学尤盛。清晨排队上香者众，每逢初一、十五更甚。它规模不大，却是民间信仰与五台山佛教文化交融的鲜活现场，是此行「灵验寺庙」主题的核心。',
+        intro: '五爷庙（万佛阁）是五台山香火最旺的寺院，供奉龙五爷（文殊菩萨化身），以「有求必应」闻名，求财、求事业、求学尤盛。清晨排队上香者众，每逢初一、十五更甚。它是民间信仰与五台山佛教文化交融的鲜活现场，是此行「灵验寺庙」主题的核心。',
         video: 'https://www.bilibili.com/video/BV1Ct42137gq/',
-        detail: '黛螺顶下来后若时间允许（约16:30前）就近先拜五爷庙，其余寺庙留到 D4。',
         pay: { alipay: 1, wechat: 1, cash: 1 }
       },
       {
-        name: '晚餐 · 台蘑炖菜（台怀镇就近）', lat: 39.0000, lng: 113.5920,
-        type: 'food', time: '18:30',
-        desc: '台怀镇就近搜「台蘑」炖土鸡 / 台蘑面，人均 40–60。',
-        budget: '人均 ¥40–60',
-        dianpingKeyword: '五台山 台蘑', xhsKeyword: '五台山 台蘑'
+        name: '寻山记 · 云屿山白民宿（黛螺顶|殊像寺店）', lat: 39.0050, lng: 113.5960,
+        type: 'hotel', time: '18:30',
+        desc: '2025 年新开，近黛螺顶/殊像寺，门口即公交站。',
+        budget: '约 ¥300–500/间/晚',
+        detail: '2 间房住 1 晚，携程搜「云屿山白民宿」。',
+        dianpingKeyword: '五台山 云屿山白民宿', pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '寻山记 · 云屿山白民宿（五爷庙店）', lat: 39.0050, lng: 113.5960,
-        type: 'hotel', time: '20:00',
-        desc: '2025 年新开，景区 C 位，近黛螺顶/殊像寺，门口即公交站。',
-        budget: '约 ¥300–500/间/晚',
-        detail: '台怀镇垚子村东街2巷17号，2 间房住 1 晚，携程搜「云屿山白民宿」。',
-        dianpingKeyword: '五台山 云屿山白民宿', pay: { alipay: 1, wechat: 1 }
+        name: '一盏明灯全素斋', lat: 39.0010, lng: 113.5940,
+        type: 'food', time: '午餐',
+        desc: '台怀镇口碑素斋，台蘑、素肉、豆腐宴。',
+        budget: '人均 ¥50–70', dish: '台蘑、素肉、豆腐宴、五台山素面',
+        dianpingKeyword: '一盏明灯全素斋 五台山', xhsKeyword: '五台山 素斋'
+      },
+      {
+        name: '台蘑炖菜（台怀镇就近）', lat: 39.0000, lng: 113.5920,
+        type: 'food', time: '晚餐',
+        desc: '台怀镇就近搜「台蘑」炖土鸡 / 台蘑面。',
+        budget: '人均 ¥40–60', dish: '台蘑炖土鸡、台蘑面',
+        dianpingKeyword: '五台山 台蘑', xhsKeyword: '五台山 台蘑'
       }
     ]
   },
   {
-    id: 4, label: 'D4', date: '9/8 周二', title: '五台山寺庙群 + 佛光寺 → 太原（还车）',
+    id: 4, label: 'D4', date: '9/8 周二', title: '五台山寺庙群 + 佛光寺 → 太原柳巷（还车）',
     color: '#4a90d9', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Great_White_Pagoda2.JPG?width=900',
     locations: [
       {
@@ -480,12 +527,6 @@ const DAYS = [
         pay: { alipay: 1, wechat: 1, cash: 1 }
       },
       {
-        name: '午餐 · 豆村/服务区简餐', lat: 38.8700, lng: 113.2000,
-        type: 'food', time: '12:00',
-        desc: '豆村镇或高速服务区简餐，人均 20–30，别耽误下午路程。',
-        budget: '人均 ¥20–30', dianpingKeyword: '五台县 美食'
-      },
-      {
         name: '佛光寺', lat: 38.8686, lng: 113.5810,
         type: 'spot', time: '13:00',
         desc: '梁思成、林徽因发现的唐代木构「中国第一国宝」，东大殿 + 彩塑 + 壁画。',
@@ -497,7 +538,7 @@ const DAYS = [
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '🚗 自驾 · 佛光寺 → 太原（异地还车）', lat: 37.8736, lng: 112.5620,
+        name: '🚗 自驾 · 佛光寺 → 太原（异地还车）', lat: 37.8200, lng: 112.5580,
         type: 'transport', time: '15:00',
         desc: '约 2.5–3 小时到太原，到店办理「异地还车」。',
         budget: '异地还车费另计',
@@ -505,22 +546,15 @@ const DAYS = [
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '太原南站龙城大街希尔顿欢朋酒店', lat: 37.7700, lng: 112.5820,
+        name: '太原茂业天地亲贤街亚朵酒店', lat: 37.8200, lng: 112.5580,
         type: 'hotel', time: '18:00',
-        desc: '国际品牌中高端连锁，毗邻太原南站与武宿机场。',
-        budget: '约 ¥350–500/间/晚',
-        detail: '龙城大街29号，2 间房住 2 晚（D4、D5）。',
-        dianpingKeyword: '太原南站龙城大街希尔顿欢朋酒店', pay: { alipay: 1, wechat: 1 }
+        desc: '亚朵标准：双床房 + 洗衣房，近茂业天地商圈。',
+        budget: '约 ¥300–450/间/晚',
+        detail: '2 间房住 2 晚（D4、D5）。亲贤街，打车去柳巷约 15 分钟。',
+        dianpingKeyword: '太原茂业天地亲贤街亚朵酒店', pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '晚餐 · 并州大牌档', lat: 37.8670, lng: 112.5615,
-        type: 'food', time: '19:00',
-        desc: '太原人聚餐大牌档，过油肉、代县熬鱼、泡泡油糕，人均 70–80。',
-        budget: '人均 ¥70–80',
-        dianpingKeyword: '并州大牌档 太原', xhsKeyword: '并州大牌档 太原'
-      },
-      {
-        name: '钟楼街夜市', lat: 37.8670, lng: 112.5605,
+        name: '柳巷 · 钟楼街夜市', lat: 37.8670, lng: 112.5605,
         type: 'spot', time: '20:30',
         desc: '太原老城夜景 + 食品街小吃，碗托、灌肠尝鲜，免费。',
         budget: '免费', xhsKeyword: '太原钟楼街 夜景',
@@ -528,154 +562,186 @@ const DAYS = [
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '备选 · 老太原菜馆（钟楼街店）', lat: 37.8668, lng: 112.5598,
-        type: 'food', time: '—',
-        desc: '糖醋丸子、过油肉、百花稍梅，人均 80。',
-        budget: '人均 ¥80', dianpingKeyword: '老太原菜馆 太原'
-      }
-    ]
-  },
-  {
-    id: 5, label: 'D5', date: '9/9 周三', title: '晋祠 + 山西博物院 · 太原老城',
-    color: '#5cb85c', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Jinci_Temple_%2854573021971%29.jpg?width=900',
-    locations: [
-      {
-        name: '晋祠', lat: 37.7088, lng: 112.4418,
-        type: 'spot', time: '08:00',
-        desc: '「晋祠三绝」：圣母殿、鱼沼飞梁、难老泉，宋塑侍女像必看。',
-        budget: '¥80/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Jinci_Temple_%2854573021971%29.jpg?width=900',
-        xhsKeyword: '晋祠 圣母殿 攻略',
-        intro: '晋祠为纪念周武王之子、晋国开国君主唐叔虞而建，现存宋代建筑圣母殿与鱼沼飞梁为「国宝」，难老泉为「晋阳第一泉」。圣母殿内43尊宋代彩塑侍女像神态各异、栩栩如生。周柏、难老泉、侍女像并称「晋祠三绝」，是晋文化源头与宋式建筑典范。',
-        video: 'https://www.bilibili.com/video/BV1Vx4y1p7Un/',
-        detail: '8:00 开门就进，人少光线好，游览约 2–2.5 小时。打车从酒店出发约 40 分钟。',
-        pay: { alipay: 1, wechat: 1 }
-      },
-      {
-        name: '山西博物院', lat: 37.8585, lng: 112.5278,
-        type: 'spot', time: '11:00',
-        desc: '晋魂通史展 + 镇馆之宝鸟尊，免费但需提前 3 天公众号实名预约。',
-        budget: '免费（需预约）', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Shanxi_Museum_-_bo_you.JPG?width=900',
-        xhsKeyword: '山西博物院 鸟尊',
-        intro: '山西博物院以「晋魂」为主题，馆藏50余万件，镇馆之宝晋侯鸟尊（西周青铜器）是山西简称「晋」的图腾。常设晋国霸业、佛风遗韵、土木华章等专题，系统呈现山西作为华夏文明重要发源地与地上文物大省的地位，是入晋前「预习」的绝佳去处。',
-        video: 'https://www.bilibili.com/video/BV1JD421774e/',
-        detail: '9/9 周三开放（周一闭馆），预留 2 小时。',
-        pay: { alipay: 1, wechat: 1 }
-      },
-      {
-        name: '午餐 · 并州大牌档', lat: 37.8670, lng: 112.5615,
-        type: 'food', time: '13:30',
-        desc: '过油肉、代县熬鱼、泡泡油糕，人均 70–80。',
-        budget: '人均 ¥70–80',
+        name: '并州大牌档', lat: 37.8670, lng: 112.5615,
+        type: 'food', time: '晚餐',
+        desc: '太原人聚餐大牌档，晋菜代表。',
+        budget: '人均 ¥70–80', dish: '过油肉、代县熬鱼、泡泡油糕',
         dianpingKeyword: '并州大牌档 太原', xhsKeyword: '并州大牌档 太原'
       },
       {
-        name: '柳巷 / 食品街 · 买伴手礼', lat: 37.8670, lng: 112.5605,
-        type: 'spot', time: '15:30',
-        desc: '买伴手礼：平遥牛肉、宁化府醋、太谷饼、闻喜煮饼，太原买比景区便宜。',
-        budget: '免费逛', xhsKeyword: '太原柳巷 伴手礼',
-        intro: '柳巷与食品街是太原最热闹的市井商圈，也是买伴手礼的实惠之地。平遥牛肉、宁化府陈醋、太谷饼、闻喜煮饼、汾酒等都能一站式买到，价格比景区更实在，适合返程前补货。',
-        pay: { alipay: 1, wechat: 1 }
+        name: '老太原菜馆（钟楼街店）', lat: 37.8668, lng: 112.5598,
+        type: 'food', time: '—',
+        desc: '太原老字号晋菜。',
+        budget: '人均 ¥80', dish: '糖醋丸子、过油肉、百花稍梅',
+        dianpingKeyword: '老太原菜馆 太原'
       },
       {
-        name: '晚餐 · 老太原菜馆（钟楼街店）', lat: 37.8668, lng: 112.5598,
-        type: 'food', time: '18:00',
-        desc: '糖醋丸子、过油肉、百花稍梅，人均 80。',
-        budget: '人均 ¥80', dianpingKeyword: '老太原菜馆 太原'
+        name: '柳巷/食品街小吃', lat: 37.8670, lng: 112.5605,
+        type: 'food', time: '小吃',
+        desc: '碗托、灌肠、头脑等本地小吃，夜市边走边吃。',
+        budget: '人均 ¥20–30', dish: '碗托、灌肠、头脑',
+        xhsKeyword: '太原食品街 小吃'
       }
     ]
   },
   {
-    id: 6, label: 'D6', date: '9/10 周四', title: '分两组 · A返揭阳 / B赴临汾',
-    color: '#f59e0b',
+    id: 5, label: 'D5', date: '9/9 周三', title: '临汾一日游 · 广胜寺 + 小西天 + 壶口瀑布',
+    color: '#5cb85c', cover: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hukou_Waterfall_1.jpg?width=900',
     locations: [
       {
-        name: '早餐 · 清和元（头脑/稍梅）', lat: 37.8695, lng: 112.5660,
-        type: 'food', time: '08:00',
-        desc: '太原特色早餐，头脑 + 稍梅，人均 30–50，两组一起吃完再出发。',
-        budget: '人均 ¥30–50',
-        dianpingKeyword: '清和元 太原', xhsKeyword: '太原 头脑 清和元'
-      },
-      {
-        name: 'B组 · 太原南站 → 临汾西（高铁）', lat: 37.7750, lng: 112.5820,
-        type: 'transport', time: '09:30',
-        desc: 'B组 2 人从酒店步行/打车至太原南站，高铁约 1.5 小时到临汾西站。',
-        budget: '高铁约 ¥90–130/人',
-        detail: '酒店就在太原南站旁，步行可达。到临汾后打车去酒店。',
+        name: '🚄 高铁 · 太原南站 → 临汾西', lat: 37.7750, lng: 112.5820,
+        type: 'transport', time: '07:00',
+        desc: '早班高铁约 1.5 小时到临汾西站，到站后包车游临汾三景。',
+        budget: '高铁 ¥90–130/人',
+        detail: '建议 07:00 前后发车，09:00 前到临汾。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: 'A组 · 太原武宿机场 · 值机返揭阳', lat: 37.7469, lng: 112.6282,
+        name: '广胜寺（飞虹塔）', lat: 36.2500, lng: 111.7800,
+        type: 'spot', time: '09:30',
+        desc: '「三绝」：飞虹塔（最美琉璃塔）+ 赵城金藏 + 元代壁画，西游记扫塔取景地。',
+        budget: '¥55/人', xhsKeyword: '洪洞 广胜寺 飞虹塔',
+        intro: '广胜寺位于洪洞县，以「三绝」闻名：飞虹塔（世界最高、最精美的多彩琉璃塔，西游记扫塔取景地）、赵城金藏（现存最完整的金代大藏经）与元代壁画。飞虹塔琉璃色彩绚烂，是山西古建与琉璃艺术的巅峰之一。',
+        video: 'https://www.bilibili.com/video/BV1gfNDePEgE/',
+        detail: '临汾西开车约 1 小时。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '小西天（千佛庵）', lat: 36.7000, lng: 110.9300,
+        type: 'spot', time: '12:00',
+        desc: '隰县明代悬塑绝唱，满堂贴金悬塑，黑神话取景地。',
+        budget: '¥35/人', xhsKeyword: '隰县 小西天 悬塑',
+        intro: '小西天（千佛庵）位于隰县凤凰山巅，以明代悬塑闻名。大雄宝殿内满堂悬塑，千余尊佛、菩萨、飞天凌空层叠、全部贴金，抬头即见「万千佛国悬于空中」，是《黑神话·悟空》取景地，被誉为中国悬塑艺术的绝唱。',
+        video: 'https://www.bilibili.com/video/BV1S5TjzYE8H/',
+        detail: '⚠️ 距临汾最远（约 2.5 小时车程），是本日最耗时的点；时间紧可舍，优先保壶口。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '壶口瀑布（山西侧 · 吉县）', lat: 36.1500, lng: 110.4500,
+        type: 'spot', time: '14:30',
+        desc: '黄河之心·民族之魂，世界最大黄色瀑布，晋陕大峡谷收束倾泻。',
+        budget: '¥100/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hukou_Waterfall_1.jpg?width=900',
+        xhsKeyword: '壶口瀑布 山西侧',
+        intro: '壶口瀑布是黄河中游晋陕大峡谷的天然瀑布，东为山西吉县、西为陕西宜川，是「中国第二大瀑布」「世界最大黄色瀑布」，被誉为「黄河之心·民族之魂」。黄河在此收束于几十米的「壶口」倾泻而下，声如雷鸣、水雾腾空，四季各有震撼。',
+        video: 'https://www.bilibili.com/video/BV12ubHzoE3K/',
+        detail: '山西侧观景更近瀑布；对面陕西侧可隔河相望。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '🚄 高铁 · 临汾西 → 太原南', lat: 36.0600, lng: 111.4600,
+        type: 'transport', time: '19:30后',
+        desc: '坐 19:30 以后的高铁回太原，约 1.5 小时。',
+        budget: '高铁 ¥90–130/人',
+        detail: '务必提前订返程票；从壶口回临汾西开车约 2.5 小时，时间很紧。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '太原茂业天地亲贤街亚朵酒店', lat: 37.8200, lng: 112.5580,
+        type: 'hotel', time: '22:00',
+        desc: 'D4、D5 连住，回到太原即休息。',
+        budget: '已含（连住第 2 晚）',
+        detail: '2 间房。',
+        dianpingKeyword: '太原茂业天地亲贤街亚朵酒店', pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '临汾牛肉丸子面', lat: 36.0900, lng: 111.5100,
+        type: 'food', time: '午餐',
+        desc: '临汾特色牛肉丸子面，辣香过瘾。',
+        budget: '人均 ¥25–40', dish: '牛肉丸子面',
+        dianpingKeyword: '临汾 牛肉丸子面', xhsKeyword: '临汾 牛肉丸子面'
+      },
+      {
+        name: '吉县/壶口黄河鲤鱼', lat: 36.1500, lng: 110.4500,
+        type: 'food', time: '—',
+        desc: '壶口附近的黄河鲤鱼、凉粉等农家菜。',
+        budget: '人均 ¥50–80', dish: '黄河鲤鱼、吉县苹果、凉粉',
+        dianpingKeyword: '壶口 黄河鲤鱼', xhsKeyword: '壶口瀑布 美食'
+      }
+    ]
+  },
+  {
+    id: 6, label: 'D6', date: '9/10 周四', title: '分两组 · A返潮州 / B博物院+晋祠',
+    color: '#f59e0b',
+    locations: [
+      {
+        name: 'B组 · 山西博物院', lat: 37.8585, lng: 112.5278,
+        type: 'spot', time: '09:00',
+        desc: '晋魂通史展 + 镇馆之宝鸟尊，免费但需提前 3 天公众号实名预约。',
+        budget: '免费（需预约）', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Shanxi_Museum_-_bo_you.JPG?width=900',
+        xhsKeyword: '山西博物院 鸟尊',
+        intro: '山西博物院以「晋魂」为主题，馆藏50余万件，镇馆之宝晋侯鸟尊（西周青铜器）是山西简称「晋」的图腾。常设晋国霸业、佛风遗韵、土木华章等专题，系统呈现山西作为华夏文明重要发源地与地上文物大省的地位。',
+        video: 'https://www.bilibili.com/video/BV1JD421774e/',
+        detail: '9/10 周四开放（周一闭馆）。B组 09:00 前到，逛约 2 小时。',
+        pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: 'A组 · 太原武宿机场 · 值机返潮州', lat: 37.7469, lng: 112.6282,
         type: 'transport', time: '10:30',
-        desc: 'A组 2 人打车约 35 分钟到武宿机场，12:00 航班回揭阳潮汕（潮州/揭阳）。',
+        desc: 'A组 2 人打车约 35 分钟到武宿机场，12:00 航班回潮州/揭阳。',
         budget: '返程以实价为准',
         detail: '酒店到机场约 35–40 分钟。10:30 出发，留足安检时间。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: 'B组 · 临汾金海湾亚朵酒店（向阳西路）', lat: 36.0900, lng: 111.5100,
-        type: 'hotel', time: '14:00',
-        desc: '推荐临汾：向阳西路亚朵，2021 开业、128 间房，近尧庙/华门。',
-        budget: '约 ¥250–350/间/晚',
-        detail: 'B组 1 间房住 1 晚。备选：临汾车站街亚朵酒店（近临汾站）。',
-        dianpingKeyword: '临汾金海湾艺术中心向阳西路亚朵酒店', pay: { alipay: 1, wechat: 1 }
-      },
-      {
-        name: 'B组 · 尧庙 · 华门（尧都）', lat: 36.0700, lng: 111.5100,
-        type: 'spot', time: '15:30',
-        desc: '华夏始祖帝尧建都之地，尧庙 + 华门「天下第一门」相邻，一起逛。',
-        budget: '尧庙约¥40 + 华门约¥50',
-        xhsKeyword: '临汾 尧庙 华门',
-        intro: '临汾古称平阳，是帝尧建都之地。尧庙始建于西晋，供奉华夏始祖帝尧，是中华文明起源的重要地标。紧邻的华门以「天下第一门」著称，象征尧开启中华文明之门。二者一古一今，是了解华夏源头、进行寻根祭祖之旅的核心。',
-        video: 'https://www.bilibili.com/video/BV1wv421i7Rx/',
-        detail: '尧庙与华门相邻，约 2 小时逛完，下午抵达后正好。',
+        name: 'B组 · 晋祠', lat: 37.7088, lng: 112.4418,
+        type: 'spot', time: '14:00',
+        desc: '「晋祠三绝」：圣母殿、鱼沼飞梁、难老泉，宋塑侍女像必看。',
+        budget: '¥80/人', img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Jinci_Temple_%2854573021971%29.jpg?width=900',
+        xhsKeyword: '晋祠 圣母殿 攻略',
+        intro: '晋祠为纪念周武王之子、晋国开国君主唐叔虞而建，现存宋代建筑圣母殿与鱼沼飞梁为「国宝」，难老泉为「晋阳第一泉」。圣母殿内43尊宋代彩塑侍女像神态各异、栩栩如生。周柏、难老泉、侍女像并称「晋祠三绝」，是晋文化源头与宋式建筑典范。',
+        video: 'https://www.bilibili.com/video/BV1Vx4y1p7Un/',
+        detail: '下午去晋祠，游览约 2–2.5 小时。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: 'B组 · 晚餐 · 临汾牛肉丸子面', lat: 36.0900, lng: 111.5100,
-        type: 'food', time: '18:00',
-        desc: '临汾特色牛肉丸子面，辣香过瘾，人均 25–40。',
-        budget: '人均 ¥25–40',
-        dianpingKeyword: '临汾 牛肉丸子面', xhsKeyword: '临汾 牛肉丸子面'
+        name: 'B组 · 太原南站龙城大街希尔顿欢朋酒店', lat: 37.7700, lng: 112.5820,
+        type: 'hotel', time: '18:00',
+        desc: '国际品牌中高端连锁，毗邻太原南站与武宿机场，方便 D7 返程。',
+        budget: '约 ¥350–500/间/晚',
+        detail: 'B组 1 间房住 1 晚。行李可寄存前台后去博物院/晋祠。',
+        dianpingKeyword: '太原南站龙城大街希尔顿欢朋酒店', pay: { alipay: 1, wechat: 1 }
+      },
+      {
+        name: '清和元（头脑/稍梅）', lat: 37.8695, lng: 112.5660,
+        type: 'food', time: '早餐',
+        desc: '太原特色早餐，头脑 + 稍梅，两组一起吃完再出发。',
+        budget: '人均 ¥30–50', dish: '头脑、稍梅',
+        dianpingKeyword: '清和元 太原', xhsKeyword: '太原 头脑 清和元'
+      },
+      {
+        name: 'B组 · 并州大牌档 / 博物院周边', lat: 37.8670, lng: 112.5615,
+        type: 'food', time: '午餐',
+        desc: 'B组午餐，晋菜或博物院周边简餐。',
+        budget: '人均 ¥40–80', dish: '过油肉、代县熬鱼、泡泡油糕',
+        dianpingKeyword: '并州大牌档 太原', xhsKeyword: '并州大牌档 太原'
+      },
+      {
+        name: 'B组 · 老太原菜馆（钟楼街店）', lat: 37.8668, lng: 112.5598,
+        type: 'food', time: '晚餐',
+        desc: 'B组晚餐晋菜。',
+        budget: '人均 ¥80', dish: '糖醋丸子、过油肉、百花稍梅',
+        dianpingKeyword: '老太原菜馆 太原'
       }
     ]
   },
   {
-    id: 7, label: 'D7', date: '9/11 周五', title: '临汾 · 大槐树寻根 + 临汾博物馆（B组）',
+    id: 7, label: 'D7', date: '9/11 周五', title: 'B组 · 航班中转北京返程',
     color: '#8b5cf6',
     locations: [
       {
-        name: '洪洞大槐树寻根祭祖园', lat: 36.2900, lng: 111.6800,
-        type: 'spot', time: '09:00',
-        desc: '海内外华人寻根祭祖圣地，明初移民见证地。',
-        budget: '约 ¥80/人', xhsKeyword: '洪洞大槐树 寻根',
-        intro: '「问我祖先在何处，山西洪洞大槐树。」明初洪武、永乐年间，朝廷在洪洞大槐树下组织大规模移民，迁民后裔遍布全国乃至海外。大槐树寻根祭祖园因此成为海内外华人寻根祭祖的圣地，每年举行祭祖大典，是极具情感共鸣的人文现场。',
-        video: 'https://www.bilibili.com/video/BV1tn836WELZ/',
-        detail: '从临汾市区开车约 40 分钟。',
+        name: 'B组 · 太原武宿机场 · 中转北京返程', lat: 37.7469, lng: 112.6282,
+        type: 'transport', time: '08:00',
+        desc: 'B组 2 人打车到武宿机场，航班经北京中转回深圳/揭阳。',
+        budget: '返程以实价为准',
+        detail: '酒店在太原南站旁，去机场约 35 分钟；预留中转时间，注意北京中转是否需重新值机/行李。',
         pay: { alipay: 1, wechat: 1 }
       },
       {
-        name: '午餐 · 洪洞/临汾本地菜', lat: 36.2800, lng: 111.6600,
-        type: 'food', time: '12:30',
-        desc: '就近家常菜或面食，人均 30–50。',
-        budget: '人均 ¥30–50', dianpingKeyword: '洪洞 美食'
-      },
-      {
-        name: '临汾博物馆', lat: 36.0900, lng: 111.5100,
-        type: 'spot', time: '14:30',
-        desc: '青铜器、陶器、水陆画为特色，快速读懂「最早中国」文脉。',
-        budget: '免费（需预约）', xhsKeyword: '临汾博物馆',
-        intro: '临汾博物馆馆藏以青铜器、陶器、水陆画、木版年画为特色，尤其晋国青铜器与陶寺遗址文物，勾勒出从帝尧建都到晋国称霸的历史脉络，是快速读懂临汾「最早中国」文脉的窗口。',
-        video: 'https://www.bilibili.com/video/BV1gdVee6Ep7/',
-        detail: '下午轻松逛，作为临汾行程的收尾。',
+        name: '酒店自助早餐（希尔顿欢朋）', lat: 37.7700, lng: 112.5820,
+        type: 'food', time: '早餐',
+        desc: '退房前吃早餐，再出发去机场。',
+        budget: '含在房费', dish: '中西式自助早餐',
         pay: { alipay: 1, wechat: 1 }
-      },
-      {
-        name: '晚餐 · 临汾（自由安排 · 行程结束）', lat: 36.0900, lng: 111.5100,
-        type: 'food', time: '18:00',
-        desc: '周五晚行程到此结束，之后不再安排；返程请自行提前订票。',
-        budget: '人均 ¥50–80',
-        dianpingKeyword: '临汾 美食',
-        detail: 'B组返程建议：可临汾西高铁返太原后飞，或查临汾→深圳/揭阳航班，务必提前购票。'
       }
     ]
   }
@@ -687,56 +753,55 @@ function overviewContent() {
     if (l.img && !photos.find(p => p.img === l.img)) photos.push({ name: l.name, img: l.img });
   }));
   return `
-<div class="hero"><h1>山西 7 天 6 晚 · 寺庙人文巡礼</h1><p class="subtitle">惠州出发 9/4–9/10 · 4 成人 · 大同 → 五台山（忻州）→ 太原（A组返揭阳 / B组续临汾）· 性价比 + 质价比</p></div>
+<div class="hero"><h1>山西 7 天 6 晚 · 寺庙人文 + 临汾一日游</h1><p class="subtitle">惠州出发 9/4–9/10 · 4 成人 · 大同 → 五台山 → 太原（临汾一日游）· A组返潮州 / B组续太原 · 性价比 + 质价比</p></div>
 <div class="info-grid">
-  <div class="info-card"><div class="label">酒店</div><div class="value">D1 予安境（大同古城）<br>D2 温德姆至尊豪廷<br>D3 五台山云屿山白民宿<br>D4–D5 太原希尔顿欢朋<br>B组 D6 临汾亚朵（推荐）</div></div>
-  <div class="info-card"><div class="label">航班</div><div class="value">去 9/4 晚 惠州→大同（武汉中转）<br>9/5 周六 11:55 到云冈机场<br>A组回 9/10 周四 12:00 武宿返揭阳<br>B组 9/10 去临汾、返程自订</div></div>
-  <div class="info-card"><div class="label">交通</div><div class="value">D2–D4 租车自驾 3 天<br>其余打车 / 高铁<br>大同→五台山约 3.5h<br>五台山→太原约 3h</div></div>
-  <div class="info-card"><div class="label">预估费用</div><div class="value">人均约 ¥4,500–5,500（含大交通）<br>B组续临汾人均约 +¥300–500</div></div>
+  <div class="info-card"><div class="label">酒店</div><div class="value">D1 予安境（大同）<br>D2 温德姆至尊豪廷<br>D3 五台山云屿山白民宿<br>D4–D5 太原茂业亚朵<br>D6 希尔顿欢朋（B组）</div></div>
+  <div class="info-card"><div class="label">航班</div><div class="value">去 9/4 晚 惠州→大同（武汉中转）<br>9/5 周六 11:55 到云冈机场<br>A组回 9/10 周四 12:00 武宿返潮州<br>B组 9/11 周五 中转北京返程</div></div>
+  <div class="info-card"><div class="label">交通</div><div class="value">D2–D4 租车自驾 3 天<br>D5 高铁临汾一日游<br>其余打车</div></div>
+  <div class="info-card"><div class="label">预估费用</div><div class="value">人均约 ¥4,600–5,600（含大交通）<br>B组续 2 天人均约 +¥400–600</div></div>
 </div>
-<div class="section-head">✈️ 航班（按你选定的时间）</div>
+<div class="section-head">✈️ 航班</div>
 <div class="pay-summary"><h4>去程 9/4（周五）晚</h4>
-· 20:30 惠州出发，武汉中转，9/5 周六 11:55 落地大同云冈机场，落地即开始行程。<br>
+· 20:30 惠州出发，武汉中转，9/5 周六 11:55 落地大同云冈机场。<br>
 <h4 style="margin-top:8px">A组返程 9/10（周四）</h4>
-· 12:00 到武宿机场值机，下午航班回揭阳潮汕；建议 10:30 从酒店出发。<br>
-<h4 style="margin-top:8px">B组 9/10 去临汾 · 返程自订</h4>
-· B组乘太原南→临汾西高铁（约 1.5h）赴临汾，9/11 周五晚结束行程。<br>
-<span class="warn">⚠️ 机票具体班次与价格以你下单页面为准；B组返程（临汾/太原→深圳或揭阳）请提前订票。</span></div>
-<div class="section-head">👥 第6天分组说明</div>
-<div class="pay-summary"><h4>A组（2人）· 回潮州/揭阳</h4>
-早餐后打车去武宿机场，乘 12:00 航班返揭阳潮汕，结束行程。<br>
-<h4 style="margin-top:8px">B组（2人）· 续临汾</h4>
-早餐后乘高铁去临汾，下午逛尧庙·华门，住向阳西路亚朵；D7 去洪洞大槐树 + 临汾博物馆，周五晚结束。</div>
+· 12:00 武宿机场值机，下午回潮州/揭阳，建议 10:30 出发。<br>
+<h4 style="margin-top:8px">B组返程 9/11（周五）</h4>
+· 航班经北京中转回深圳/揭阳；注意中转是否需要重新值机/行李直挂。<br>
+<span class="warn">⚠️ 机票以你下单页面为准；北京中转预留充足转机时间。</span></div>
+<div class="section-head">👥 分组说明</div>
+<div class="pay-summary"><h4>D1–D5 全程同游</h4>
+4 人一起走大同、五台山、太原，D5 高铁临汾一日游（广胜寺 + 小西天 + 壶口瀑布）。<br>
+<h4 style="margin-top:8px">D6 分两组</h4>
+· A组（2人）12:00 航班返潮州；<br>
+· B组（2人）早上山西博物院、下午晋祠，住太原南站希尔顿欢朋；<br>
+· D7 B组航班中转北京返程。</div>
+<div class="section-head">⚠️ 临汾一日游 · 三点全走可行性提示</div>
+<div class="pay-summary">广胜寺、小西天、壶口瀑布三者分处洪洞、隰县、吉县，相距很远，当天高铁往返太原基本「赶不动」。<br>
+<span class="warn">建议三选二：优先保留壶口（你最想看）+ 广胜寺（顺路、飞虹塔）；小西天最远（往返多 2.5 小时车程），时间紧就舍。</span><br>
+若三点都想看，建议把 D5 改为住临汾一晚（D6 上午再返太原），但这会与 D6 上午 A组返程/B组逛太原冲突，需你确认。</div>
 <div class="section-head">☀️ 天气提醒（9/5–9/11）</div>
 <div class="pay-summary"><h4>大同 9/5–9/7：晴到多云，8–26℃</h4>
-昼夜温差大，白天短袖 + 早晚薄外套。<br>
+昼夜温差大，早晚加薄外套。<br>
 <h4 style="margin-top:8px">五台山 9/7–9/8：台怀镇约 8–18℃</h4>
-山里明显更冷，早晚接近 10℃，建议带薄羽绒/抓绒，山顶风大。<br>
-<h4 style="margin-top:8px">太原 9/8–9/10：晴，12–27℃</h4>
-晋祠和古城墙户外体验佳。<br>
-<h4 style="margin-top:8px">临汾 9/10–9/11：晴到多云，14–27℃</h4>
-户外逛尧庙、大槐树体感舒适。<br>
-<span class="ok-text">✔ 秋高气爽少雨，是错峰游山西的好窗口；山区早晚请加衣。</span></div>
+山里明显更冷，早晚接近 10℃，带薄羽绒/抓绒。<br>
+<h4 style="margin-top:8px">太原 9/8–9/11：晴，12–27℃</h4>
+晋祠、博物院、古城户外体验佳。<br>
+<h4 style="margin-top:8px">临汾/壶口 9/9：晴到多云，14–27℃</h4>
+壶口水雾大，注意手机防水。<br>
+<span class="ok-text">✔ 秋高气爽少雨，是错峰游山西的好窗口。</span></div>
 <div class="section-head">行程概览</div>
 <div class="day-list">${DAYS.slice(1).map(d=>`<div class="card" onclick="go(${d.id})"><div class="name"><span class="dot" style="background:${d.color}"></span>${d.label} · ${d.title}</div><div class="desc">${d.date}</div></div>`).join('')}</div>
 <div class="section-head">📸 打卡点预览（图片来自 Wikimedia Commons）</div>
 <div class="photo-grid">${photos.map(p=>`<div class="photo-card"><img loading="lazy" src="${p.img}" alt="${p.name}"><div>${p.name}</div></div>`).join('')}</div>
-<div class="section-head">🚗 小交通（租车 3 天）与预算</div>
+<div class="section-head">🚗 小交通（租车 3 天）</div>
 <div class="pay-summary"><h4>D2–D4 租车自驾（大同取 / 太原还）</h4>
 · 7 座 SUV 约 ¥350–500/天 × 3 = ¥1,050–1,500；<br>
-· 油费 + 高速约 ¥650–750（全程约 620 公里）；<br>
-· 异地还车费约 ¥500–1,000（大同取、太原还，平台差异大，务必提前确认）。<br>
-<span class="ok-text">✔ 4 人分摊租车交通约 ¥2,200–3,250，人均 ¥550–810。</span><br>
-<span class="warn">⚠️ 异地还车费是最大变量：若费用过高，可对比「包车含司机」约 ¥2,200–2,800/车，免异地费、免自驾疲劳，值得询价。</span></div>
-<div class="section-head">支付提醒</div>
-<div class="pay-summary"><h4>🏔️ 五台山大门票（¥135/人）</h4>
-需提前在「五台山游客服务中心」公众号实名预约；如遇工作日免票/半价活动以官方公告为准，可再省一笔。</div>
-<div class="pay-summary"><h4>🎫 悬空寺（已确认不登临）</h4>
-只买 ¥25 门票，在对面观景台拍全景，省 ¥100/人和排队时间。</div>
-<div class="pay-summary"><h4>🎟️ 其余门票 / 预约</h4>
-云冈 ¥120、华严寺 ¥50、佛光寺 ¥40、黛螺顶 ¥8（+缆车 ¥85）、晋祠 ¥80；山西博物院、临汾博物馆免费但需提前公众号预约。</div>
-<div class="pay-summary"><h4>💴 支付</h4>
-酒店/门票/大额消费支付宝微信皆可；寺庙功德箱、部分小摊备点现金零钱。</div>
+· 油费 + 高速约 ¥700–800；<br>
+· 异地还车费约 ¥500–1,000（大同取、太原还，平台差异大，务必确认）。<br>
+<span class="ok-text">✔ 4 人分摊租车交通约 ¥2,250–3,300，人均 ¥560–830。</span><br>
+<span class="warn">⚠️ 异地还车费是最大变量：若过高，可对比「包车含司机」约 ¥2,200–2,800/车，免异地费、免自驾疲劳。</span></div>
+<div class="section-head">🎟️ 门票 / 预约</div>
+<div class="pay-summary">云冈 ¥120、应县木塔 ¥50、悬空寺 ¥25（不登临）、华严寺 ¥50、五台山大门票 ¥135（需线上预约，优惠以官方为准）、黛螺顶 ¥8+缆车 ¥85、塔院寺/显通寺/菩萨顶各 ¥10、佛光寺 ¥40、广胜寺 ¥55、小西天 ¥35、壶口 ¥100、晋祠 ¥80；山西博物院免费但需提前 3 天公众号预约。</div>
 <div class="section-head">图例</div>
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--tint-red)"></div>餐厅</div>
@@ -745,13 +810,13 @@ function overviewContent() {
   <div class="legend-item"><div class="legend-dot" style="background:var(--tint-orange)"></div>酒店</div>
 </div>
 <div class="section-head">💰 预算说明（4 人 / 人均，估算区间）</div>
-<div class="pay-summary"><h4>人均约 ¥4,500–5,500（含大交通）</h4>
-· 大交通：去程惠州→大同（已订）+ 返程，约 ¥1,500–2,000/人。<br>
-· 酒店：4 晚指定 + 临汾 1 晚（B组），4 人摊约 ¥1,000–1,400/人。<br>
-· 境内交通：租车 3 天 + 打车/高铁，约 ¥600–850/人。<br>
-· 门票：约 ¥500–600/人（A组）；B组加临汾门票约 +¥150。<br>
+<div class="pay-summary"><h4>人均约 ¥4,600–5,600（含大交通）</h4>
+· 大交通：去程（已订）+ 返程，约 ¥1,500–2,000/人。<br>
+· 酒店：5–6 晚，约 ¥1,000–1,400/人。<br>
+· 境内交通：租车 3 天 + 高铁/包车/打车，约 ¥700–950/人（临汾一日游包车另计）。<br>
+· 门票：约 ¥550–650/人。<br>
 · 餐饮：约 ¥450–550/人。<br>
-<span class="ok-text">✔ 主要省钱点：悬空寺不登临、五台山如遇工作日免票、租车与包车对比、景点门票提前线上预约。</span></div>
+<span class="ok-text">✔ 主要省钱点：悬空寺不登临、五台山如遇工作日免票/半价、租车与包车对比、门票提前线上预约。</span></div>
 `;
 }
 
@@ -826,9 +891,9 @@ function showDay(idx) {
     if(!l.lat) return;
     const m = L.marker([l.lat,l.lng], { icon: icon(day.color, emojis[l.type]||'📌') }).addTo(map);
     const gmapQ = l.gmap||encodeURIComponent(l.name+' 山西');
-    m.bindPopup(`<b>${l.name}</b>${l.time!=='—'?'<br><span style="color:#86868b">'+l.time+'</span>':''}<br>${l.desc}${l.budget?'<br><span style="color:#ff9500">'+l.budget+'</span>':''}<br><a href="#" onclick="event.preventDefault();openAS('${l.name.replace(/'/g,"\\'")}',${l.lat},${l.lng},'${gmapQ}')">📍 导航</a>${l.xhs?' · <a href="'+l.xhs+'" target="_blank">📕 小红书</a>':''}`);
+    m.bindPopup(`<b>${l.name}</b>${l.time!=='—'?'<br><span style="color:#86868b">'+l.time+'</span>':''}<br>${l.desc}${l.dish?'<br>🍽️ 推荐：'+l.dish:''}${l.budget?'<br><span style="color:#ff9500">'+l.budget+'</span>':''}<br><a href="#" onclick="event.preventDefault();openAS('${l.name.replace(/'/g,"\\'")}',${l.lat},${l.lng},'${gmapQ}')">📍 导航</a>${l.xhs?' · <a href="'+l.xhs+'" target="_blank">📕 小红书</a>':''}`);
     markers.push(m);
-    if(l.time!=='—') coords.push([l.lat,l.lng]);
+    if(l.time!=='—' && l.type!=='food' && l.type!=='drink') coords.push([l.lat,l.lng]);
   });
   if(coords.length>1) { const pl = L.polyline(coords, { color:day.color, weight:2.5, opacity:.5, dashArray:'6,5' }).addTo(map); polylines.push(pl); }
   if(coords.length) map.fitBounds(coords, { padding:[40,40], maxZoom:14 });
@@ -903,16 +968,18 @@ function locCard(loc, dayIdx) {
   if(loc.reserve) lnk += `<a href="${loc.reserve}" target="_blank" class="btn rsv">📅 预约</a>`;
   if(loc.video) lnk += `<a href="${loc.video}" target="_blank" class="btn video">▶️ 解说视频</a>`;
   const photo = loc.img ? `<img class="card-photo" loading="lazy" src="${loc.img}" alt="${loc.name}" onclick="event.stopPropagation()">` : '';
-  return `<div class="tl-item"><div class="tl-dot ${dot}"></div><div class="card" onclick="if(!event.target.closest('.btn,.links'))toggle('${uid}')">${photo}<div class="time">${loc.time!=='—'?loc.time:'备选'}</div><div class="name">${bdg} ${loc.name}</div><div class="desc">${loc.desc}</div>${loc.intro?'<div class="intro"><b>亮点</b> '+loc.intro+'</div>':''}${loc.budget?'<div class="budget">'+loc.budget+'</div>':''}${payChips(loc.pay)}<div class="links">${lnk}</div>${loc.detail?'<div class="details" id="'+uid+'">'+loc.detail.replace(/\n/g,'<br>')+'</div>':''}</div></div>`;
+  return `<div class="tl-item"><div class="tl-dot ${dot}"></div><div class="card" onclick="if(!event.target.closest('.btn,.links'))toggle('${uid}')">${photo}<div class="time">${loc.time!=='—'?loc.time:'备选'}</div><div class="name">${bdg} ${loc.name}</div><div class="desc">${loc.desc}</div>${loc.dish?'<div class="dish"><b>🍽️ 推荐菜品</b> '+loc.dish+'</div>':''}${loc.intro?'<div class="intro"><b>亮点</b> '+loc.intro+'</div>':''}${loc.budget?'<div class="budget">'+loc.budget+'</div>':''}${payChips(loc.pay)}<div class="links">${lnk}</div>${loc.detail?'<div class="details" id="'+uid+'">'+loc.detail.replace(/\n/g,'<br>')+'</div>':''}</div></div>`;
 }
 
 function renderDay(idx) {
   const d = DAYS.find(x=>x.id===idx); if(!d) return '';
-  const main = d.locations.filter(l=>l.time!=='—');
-  const alt = d.locations.filter(l=>l.time==='—');
+  const main = d.locations.filter(l=>l.time!=='—' && l.type!=='food' && l.type!=='drink');
+  const alt = d.locations.filter(l=>l.time==='—' && l.type!=='food' && l.type!=='drink');
+  const food = d.locations.filter(l=>l.type==='food' || l.type==='drink');
   let h = (d.cover?`<img class="day-cover" src="${d.cover}" alt="${d.title}" onclick="go(0)">`:'') + `<div class="day-head"><h2>${d.title}</h2><p>${d.date}</p></div>`;
   if(main.length) { h += '<div class="section-head">行程</div><div class="timeline">'; main.forEach(l => h += locCard(l, idx)); h += '</div>'; }
   if(alt.length) { h += '<div class="section-head">备选</div><div class="timeline">'; alt.forEach(l => h += locCard(l, idx)); h += '</div>'; }
+  if(food.length) { h += '<div class="section-head">🍽️ 美食 · 餐厅（含推荐菜品）</div><div class="timeline">'; food.forEach(l => h += locCard(l, idx)); h += '</div>'; }
   return h;
 }
 
@@ -929,21 +996,25 @@ DAYS.forEach(d => {
   tabsEl.appendChild(btn);
 });
 
-function go(idx) {
+function go(idx, jump = true) {
   cur = idx;
   tabsEl.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', +t.dataset.day===idx));
   contentEl.innerHTML = idx===0 ? overviewContent() : renderDay(idx);
   showDay(idx);
-  contentEl.scrollTo({top:0});
   const tab = tabsEl.querySelector(`[data-day="${idx}"]`);
   if(tab) tab.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  if(jump) {
+    const tabsH = tabsEl.offsetHeight || 44;
+    const y = contentEl.getBoundingClientRect().top + window.scrollY - tabsH - 6;
+    window.scrollTo({top: Math.max(0, y), behavior:'auto'});
+  }
 }
 
 function toggle(id) { const el=document.getElementById(id); if(el) el.classList.toggle('closed'); }
 
-tabsEl.addEventListener('click', e => { const t=e.target.closest('.tab'); if(t) go(+t.dataset.day); });
+tabsEl.addEventListener('click', e => { const t=e.target.closest('.tab'); if(t) go(+t.dataset.day, true); });
 
-go(0);
+go(0, false);
 
 /* ── Action Sheet for Navigation ── */
 const asOverlay = document.createElement('div');
